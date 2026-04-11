@@ -13,7 +13,7 @@ class AppCategory {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
       'icon': icon,
       'color': color,
@@ -23,9 +23,23 @@ class AppCategory {
   factory AppCategory.fromMap(Map<String, dynamic> map) {
     return AppCategory(
       id: map['id']?.toInt(),
-      name: map['name'] ?? '',
-      icon: map['icon'] ?? '',
-      color: map['color'] ?? '',
+      name: map['name'] ?? 'General',
+      icon: map['icon'] ?? '💰',
+      color: map['color'] ?? '#10B981',
+    );
+  }
+
+  AppCategory copyWith({
+    int? id,
+    String? name,
+    String? icon,
+    String? color,
+  }) {
+    return AppCategory(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      icon: icon ?? this.icon,
+      color: color ?? this.color,
     );
   }
 }

@@ -1,166 +1,184 @@
-import Image from "next/image";
+"use client";
+
 import React from "react";
+import { motion } from "framer-motion";
 
 export default function Home() {
+  const fadeInUp = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.6 }
+  };
+
+  const stagger = {
+    animate: {
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col font-[family-name:var(--font-geist-sans)] text-slate-100 bg-slate-900">
+    <div className="min-h-screen bg-[#0F172A] text-slate-100 font-sans selection:bg-emerald-500/30">
       
-      {/* HEADER */}
-      <header className="w-full flex items-center justify-between p-6 max-w-6xl mx-auto">
-        <div className="flex items-center gap-2 font-bold text-xl tracking-wide">
-          <div className="w-8 h-8 rounded bg-emerald-500 flex items-center justify-center text-slate-900">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-              <path d="M2.25 10.515V21h19.5V10.515A2.25 2.25 0 0019.5 8.25h-15a2.25 2.25 0 00-2.25 2.265z" />
-              <path d="M4.5 4.5a2.25 2.25 0 012.25-2.25h10.5A2.25 2.25 0 0119.5 4.5v2.25h-15V4.5z" />
-            </svg>
+      {/* Premium Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0F172A]/80 backdrop-blur-xl border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+             <div className="w-10 h-10 bg-gradient-to-tr from-emerald-500 to-emerald-400 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                <svg className="w-6 h-6 text-[#0F172A]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M21 18V19C21 20.1 20.1 21 19 21H5C3.89 21 3 20.1 3 19V5C3 3.9 3.89 3 5 3H19C20.1 3 21 3.9 21 5V6H12C10.89 6 10 6.89 10 8V16C10 17.11 10.89 18 12 18H21ZM12 16H22V8H12V16ZM16 13.5C15.17 13.5 14.5 12.83 14.5 12C14.5 11.17 15.17 10.5 16 10.5C16.83 10.5 17.5 11.17 17.5 12C17.5 12.83 16.83 13.5 16 13.5Z"/>
+                </svg>
+             </div>
+             <span className="text-2xl font-bold tracking-tight text-white">PocketLedger</span>
           </div>
-          PocketLedger
+          <div className="hidden md:flex gap-8 text-sm font-medium text-slate-400">
+             <a href="#features" className="hover:text-emerald-400 transition-colors">Features</a>
+             <a href="#security" className="hover:text-emerald-400 transition-colors">Privacy</a>
+             <a href="#testimonials" className="hover:text-emerald-400 transition-colors">Stories</a>
+          </div>
+          <button className="bg-emerald-500 hover:bg-emerald-400 text-[#0F172A] font-bold px-6 py-2.5 rounded-full transition-all hover:scale-105 active:scale-95 shadow-xl shadow-emerald-500/10">
+            Download App
+          </button>
         </div>
-        <nav className="hidden md:flex gap-6 text-sm font-medium text-slate-300">
-          <a href="#features" className="hover:text-emerald-400 transition-colors">Features</a>
-          <a href="#solution" className="hover:text-emerald-400 transition-colors">Solution</a>
-          <a href="#testimonials" className="hover:text-emerald-400 transition-colors">Reviews</a>
-        </nav>
-        <button className="bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold px-5 py-2 rounded-full transition-all transform hover:scale-105">
-          Get Early Access
-        </button>
-      </header>
+      </nav>
 
-      <main className="flex-1 w-full max-w-6xl mx-auto px-6 flex flex-col gap-24 py-16">
+      <main className="pt-32 pb-20 max-w-7xl mx-auto px-6">
         
-        {/* HERO */}
-        <section className="flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1 flex flex-col gap-6">
-            <div className="inline-block px-3 py-1 bg-emerald-900/40 border border-emerald-500/20 text-emerald-400 text-xs font-semibold rounded-full w-max">
-              100% Offline-First Architecture
-            </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white leading-tight">
-              Take Control of Your Money &mdash; <span className="text-emerald-500">Even Offline.</span>
-            </h1>
-            <p className="text-lg md:text-xl text-slate-400 max-w-2xl leading-relaxed">
-              PocketLedger is the extremely fast, privacy-focused personal finance app that tracks every rupiah without mandating internet access or cloud syncs.
-            </p>
-            <div className="flex items-center gap-4 pt-4">
-              <button className="bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold px-8 py-3.5 rounded-full text-lg transition-all transform hover:scale-105 shadow-xl shadow-emerald-500/20">
-                Download for iOS
+        {/* Hero Section */}
+        <section className="flex flex-col lg:flex-row items-center gap-16 py-10 lg:py-20">
+          <motion.div 
+            initial="initial"
+            animate="animate"
+            variants={stagger}
+            className="flex-1 text-center lg:text-left"
+          >
+            <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-8">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              Offline Finance Revolution
+            </motion.div>
+            <motion.h1 variants={fadeInUp} className="text-6xl md:text-8xl font-black text-white leading-[1.05] tracking-tight mb-8">
+              Track Every <span className="text-emerald-500">Rupiah.</span> <br />
+              <span className="text-slate-500 italic">Stay Offline.</span>
+            </motion.h1>
+            <motion.p variants={fadeInUp} className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10">
+              PocketLedger is a privacy-first personal finance app. No cloud sync, no data harvesting, just lightning-fast expense tracking that works anywhere &mdash; even in the deepest jungle.
+            </motion.p>
+            <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+              <button className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-[#0F172A] font-bold px-10 py-4 rounded-2xl text-lg transition-all shadow-2xl shadow-emerald-500/20 active:translate-y-1">
+                Install on Android
               </button>
-              <button className="bg-slate-800 border border-slate-700 hover:bg-slate-700 text-white font-bold px-8 py-3.5 rounded-full text-lg transition-all hidden sm:block">
-                Download for Android
+              <button className="w-full sm:w-auto bg-slate-800 border border-slate-700 hover:bg-slate-700 text-white font-bold px-10 py-4 rounded-2xl text-lg transition-all active:translate-y-1">
+                App Store (Soon)
               </button>
-            </div>
-          </div>
-          <div className="flex-1 flex justify-center md:justify-end relative">
-            <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-transparent blur-3xl -z-10 rounded-full" />
-            <div className="w-[280px] h-[580px] bg-slate-800 rounded-[3rem] border-[8px] border-slate-900 shadow-2xl relative overflow-hidden flex flex-col">
-              {/* Fake App screen */}
-              <div className="bg-slate-900 flex-1 p-5 flex flex-col gap-6">
-                <div className="flex justify-between items-center pt-8">
-                  <div>
-                    <div className="text-slate-400 text-xs">Total Balance</div>
-                    <div className="text-white text-3xl font-bold">Rp 12.450.000</div>
-                  </div>
-                  <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center">👤</div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="flex-1 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4">
-                     <div className="text-emerald-400 text-xs mb-1">Income</div>
-                     <div className="text-white font-semibold">Rp 15.000.000</div>
-                  </div>
-                  <div className="flex-1 bg-red-500/10 border border-red-500/20 rounded-2xl p-4">
-                     <div className="text-red-400 text-xs mb-1">Expense</div>
-                     <div className="text-white font-semibold">Rp 2.550.000</div>
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <div className="text-sm font-semibold text-slate-300 mb-4">Recent Transactions</div>
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="flex justify-between items-center mb-4 pb-4 border-b border-slate-800 last:border-0">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-slate-800" />
-                        <div>
-                          <div className="text-sm font-medium text-white">Groceries</div>
-                          <div className="text-xs text-slate-500">Today, 14:00</div>
-                        </div>
-                      </div>
-                      <div className="text-red-400 font-semibold text-sm">-Rp 150.000</div>
+            </motion.div>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, rotate: 5 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="flex-1 relative group"
+          >
+            <div className="absolute inset-0 bg-emerald-500/20 blur-[100px] group-hover:bg-emerald-500/30 transition-all duration-500" />
+            <div className="relative w-full max-w-[340px] mx-auto aspect-[9/19] bg-slate-900 rounded-[3.5rem] p-4 shadow-2xl border-[12px] border-slate-800 ring-1 ring-slate-700">
+               {/* Phone Notch */}
+               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-slate-800 rounded-b-3xl z-10" />
+               
+               {/* Internal App Preview */}
+               <div className="w-full h-full bg-[#0F172A] rounded-[2.5rem] overflow-hidden p-6 flex flex-col gap-6 pt-10">
+                  <div className="flex justify-between items-start">
+                    <div>
+                       <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Total Balance</p>
+                       <p className="text-white text-2xl font-bold">Rp 15.200.000</p>
                     </div>
-                  ))}
-                </div>
+                    <div className="w-10 h-10 rounded-full bg-slate-800/50 border border-slate-700" />
+                  </div>
+                  
+                  <div className="h-28 w-full bg-emerald-500/10 rounded-2xl border border-emerald-500/20 p-4 flex flex-col justify-between">
+                     <p className="text-emerald-500 text-xs font-bold">Monthly Insight</p>
+                     <div className="flex items-end gap-1 h-12">
+                        {[40, 70, 50, 90, 60, 80].map((h, i) => (
+                          <div key={i} className="flex-1 bg-emerald-500 rounded-sm" style={{ height: `${h}%` }} />
+                        ))}
+                     </div>
+                  </div>
+
+                  <div className="flex-1 flex flex-col gap-3">
+                     <p className="text-slate-500 text-[10px] font-bold uppercase">Recent Activities</p>
+                     {[1,2,3,4].map(i => (
+                       <div key={i} className="bg-slate-800/30 h-12 rounded-xl border border-slate-800 flex items-center px-3 gap-3">
+                          <div className="w-6 h-6 rounded-full bg-slate-700" />
+                          <div className="flex-1 h-2 bg-slate-700 rounded-full w-20" />
+                          <div className="w-8 h-2 bg-red-500/20 rounded-full" />
+                       </div>
+                     ))}
+                  </div>
+                  
+                  <div className="w-full h-12 bg-emerald-500 rounded-xl shadow-lg" />
+               </div>
+            </div>
+          </motion.div>
+        </section>
+
+        {/* Features Grid */}
+        <section id="features" className="py-24">
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="bg-slate-900/50 border border-slate-800 p-10 rounded-[2.5rem] hover:bg-slate-800/50 transition-all group">
+                 <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-110 transition-all font-bold text-2xl font-mono">⚡</div>
+                 <h3 className="text-2xl font-bold text-white mb-4">Zero Latency</h3>
+                 <p className="text-slate-400 leading-relaxed">Local-first architecture means transaction entry happens at the speed of thought. No loading spinners, ever.</p>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* PROBLEM */}
-        <section id="solution" className="py-12 text-center flex flex-col items-center gap-6">
-          <h2 className="text-3xl md:text-5xl font-bold text-white max-w-3xl">
-            Most finance apps are broken.
-          </h2>
-          <p className="text-slate-400 text-lg max-w-2xl leading-relaxed">
-            They require constant internet connectivity, force you to upload your sensitive financial history to unknown servers, and are bloated with slow UIs making entering a single transaction take way too long.
-          </p>
-        </section>
-
-        {/* FEATURES GRID */}
-        <section id="features" className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-slate-800/50 border border-slate-700/50 p-8 rounded-3xl flex flex-col gap-4 hover:bg-slate-800 transition-colors">
-            <div className="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center text-2xl">
-              ⚡
-            </div>
-            <h3 className="text-xl font-bold text-white">Ultra Fast Entry</h3>
-            <p className="text-slate-400">Log a transaction in seconds. No waiting for server calls or arbitrary loading spinners. Pure local performance.</p>
-          </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 p-8 rounded-3xl flex flex-col gap-4 hover:bg-slate-800 transition-colors">
-            <div className="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center text-2xl">
-              🔒
-            </div>
-            <h3 className="text-xl font-bold text-white">100% Private</h3>
-            <p className="text-slate-400">All your financial data is stored locally in an SQLite database on your device. We couldn't look at it even if we wanted to.</p>
-          </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 p-8 rounded-3xl flex flex-col gap-4 hover:bg-slate-800 transition-colors">
-            <div className="w-12 h-12 bg-amber-500/20 text-amber-500 rounded-xl flex items-center justify-center text-2xl">
-              📊
-            </div>
-            <h3 className="text-xl font-bold text-white">Smart Analytics</h3>
-            <p className="text-slate-400">Beautiful, interactive charts powered by FL Chart to give you an instant overview of your spending habits and budget limits.</p>
-          </div>
-        </section>
-
-        {/* TESTIMONIALS */}
-        <section id="testimonials" className="py-16 text-center">
-          <h2 className="text-3xl font-bold mb-12">Loved by Freelancers & Students</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="p-8 rounded-3xl bg-gradient-to-b from-slate-800 to-slate-900 border border-slate-800 text-left">
-              <div className="flex text-amber-400 mb-4">★★★★★</div>
-              <p className="text-slate-300 italic mb-6">"Finally an app that works flawlessly when I'm traveling without data. The speed at which I can log a coffee purchase is insane."</p>
-              <div className="font-bold text-white">- Sarah J., Freelance Designer</div>
-            </div>
-            <div className="p-8 rounded-3xl bg-gradient-to-b from-slate-800 to-slate-900 border border-slate-800 text-left">
-              <div className="flex text-amber-400 mb-4">★★★★★</div>
-              <p className="text-slate-300 italic mb-6">"I don't trust cloud apps with my bank details. PocketLedger solving the privacy issue while looking this good is a game-changer."</p>
-              <div className="font-bold text-white">- Budi A., Student</div>
-            </div>
-          </div>
+              <div className="bg-slate-900/50 border border-slate-800 p-10 rounded-[2.5rem] hover:bg-slate-800/50 transition-all group">
+                 <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 mb-6 group-hover:scale-110 transition-all font-bold text-2xl font-mono">🔒</div>
+                 <h3 className="text-2xl font-bold text-white mb-4">Hardened Privacy</h3>
+                 <p className="text-slate-400 leading-relaxed">Your data never leaves your device. Not even for us. Full database control is in your hands via SQLite.</p>
+              </div>
+              <div className="bg-slate-900/50 border border-slate-800 p-10 rounded-[2.5rem] hover:bg-slate-800/50 transition-all group">
+                 <div className="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500 mb-6 group-hover:scale-110 transition-all font-bold text-2xl font-mono">📉</div>
+                 <h3 className="text-2xl font-bold text-white mb-4">Smart Trends</h3>
+                 <p className="text-slate-400 leading-relaxed">Beautiful interactive charts powered by high-performance local analytics. View spending by category instantly.</p>
+              </div>
+           </div>
         </section>
 
         {/* CTA */}
-        <section className="bg-emerald-900/30 border border-emerald-500/20 rounded-3xl p-12 text-center flex flex-col items-center gap-6">
-          <h2 className="text-4xl font-bold text-white">Ready to track your money safely?</h2>
-          <p className="text-slate-400 max-w-xl">Join thousands of users who have taken back control of their financial privacy and budgeting.</p>
-          <button className="mt-4 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold px-10 py-4 rounded-full text-xl transition-all transform hover:scale-105 shadow-xl shadow-emerald-500/20">
-            Download PocketLedger Free
-          </button>
+        <section className="bg-gradient-to-br from-emerald-600 to-emerald-400 rounded-[3rem] p-16 text-center relative overflow-hidden shadow-2xl">
+           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
+           <h2 className="text-4xl md:text-5xl font-black text-[#0F172A] mb-6">Stop leaking your financial data.</h2>
+           <p className="text-[#0F172A]/80 text-lg max-w-xl mx-auto mb-10 font-medium leading-relaxed underline decoration-white/30 underline-offset-4">
+              Join the movement of users who track money offline. No accounts required. No emails collected.
+           </p>
+           <button className="bg-[#0F172A] text-white font-bold px-12 py-5 rounded-2xl text-xl hover:bg-black transition-all shadow-xl active:translate-y-1">
+              Start Tracking Now &mdash; Free
+           </button>
         </section>
-        
+
       </main>
 
-      <footer className="w-full border-t border-slate-800 py-12 text-center text-slate-500 text-sm">
-        <div className="mb-4">© 2026 PocketLedger. All rights reserved.</div>
-        <div className="flex justify-center gap-6">
-          <a href="/privacy" className="hover:text-slate-300">Privacy Policy</a>
-          <a href="/terms" className="hover:text-slate-300">Terms of Service</a>
-          <a href="/contact" className="hover:text-slate-300">Contact Support</a>
-        </div>
+      <footer className="py-20 border-t border-slate-900 bg-[#08101E]">
+         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 text-slate-500 text-sm">
+            <div className="col-span-1 md:col-span-2">
+               <div className="flex items-center gap-2 text-white font-bold text-xl mb-6">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500" />
+                  PocketLedger
+               </div>
+               <p className="max-w-xs leading-relaxed font-medium">Built for the digital minimalist. Track every rupiah, even without internet. Privacy is a human right.</p>
+            </div>
+            <div className="flex flex-col gap-4">
+               <p className="text-white font-bold uppercase tracking-widest text-xs mb-2">Legal</p>
+               <a href="/privacy" className="hover:text-emerald-400 transition-colors">Privacy Policy</a>
+               <a href="/terms" className="hover:text-emerald-400 transition-colors">Terms of Service</a>
+               <a href="/disclaimer" className="hover:text-emerald-400 transition-colors">Disclaimer</a>
+            </div>
+            <div className="flex flex-col gap-4">
+               <p className="text-white font-bold uppercase tracking-widest text-xs mb-2">Support</p>
+               <a href="mailto:support@pocketledger.app" className="hover:text-emerald-400 transition-colors underline decoration-emerald-500/20 underline-offset-4">support@pocketledger.app</a>
+            </div>
+         </div>
       </footer>
     </div>
   );

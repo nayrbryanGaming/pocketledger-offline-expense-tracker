@@ -1,37 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'features/dashboard/dashboard_screen.dart';
-import 'services/database_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DatabaseService().database; // init the db
+  final savedThemeMode = await AdaptiveTheme.getThemeMode();
   runApp(
-    const ProviderScope(
-      child: PocketLedgerApp(),
+    ProviderScope(
+      child: PocketLedgerApp(savedThemeMode: savedThemeMode),
     ),
   );
 }
 
 class PocketLedgerApp extends StatelessWidget {
-  const PocketLedgerApp({Key? key}) : super(key: key);
+  final AdaptiveThemeMode? savedThemeMode;
+  const PocketLedgerApp({Key? key, this.savedThemeMode}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'PocketLedger',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
+    return AdaptiveTheme(
+      light: ThemeData(
+        brightness: Brightness.light,
+        primaryColor: const Color(0xFF10B981),
+        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+        textTheme: GoogleFonts.outfitTextTheme(ThemeData.light().textTheme),
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFF10B981),
+          secondary: Color(0xFFFBBF24),
+          surface: Colors.white,
+        ),
+      ),
+      dark: ThemeData(
+        brightness: Brightness.dark,
         primaryColor: const Color(0xFF10B981),
         scaffoldBackgroundColor: const Color(0xFF0F172A),
-        fontFamily: 'Inter',
+        textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme),
         colorScheme: const ColorScheme.dark(
           primary: Color(0xFF10B981),
           secondary: Color(0xFFFBBF24),
           surface: Color(0xFF1E293B),
         ),
       ),
-      home: const DashboardScreen(),
+      initial: savedThemeMode ?? AdaptiveThemeMode.dark,
+      builder: (theme, darkTheme) => MaterialApp(
+        title: 'PocketLedger',
+        debugShowCheckedModeBanner: false,
+        theme: theme,
+        darkTheme: darkTheme,
+        home: const DashboardScreen(),
+      ),
     );
   }
 }

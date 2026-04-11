@@ -1,19 +1,26 @@
-# Privacy Policy
+# Privacy Policy for PocketLedger
 
-**Effective Date:** 2026-04-11
+**Effective Date: April 11, 2026**
 
-## 1. Information We Collect
-PocketLedger ("the App") is an offline-first finance tracker. ALL financial data entered into the App is stored securely and ONLY on your local device via SQLite. We do NOT collect, transmit, or store any of your financial data on our servers.
+This Privacy Policy describes how PocketLedger ("we", "us", or "our") handles your personal information in our mobile application.
 
-## 2. Permissions
-- **Storage/Files**: To generate CSV exports and backups (if explicitly triggered by the user).
-- **Notifications**: To remind you to log daily expenses and notify budget limits.
+## 1. Zero Cloud Data Collection
+PocketLedger is designed as an **Offline-First** application. We do not maintain any external servers to store your financial data. 
+- **Financial Logs**: All transaction titles, amounts, and categories are stored locally in an encrypted SQLite database on your device.
+- **No Transmission**: We do not transmit, upload, or sync your financial information to any third-party or our own servers.
 
-## 3. Third-Party Services
-We may use generic device analytics to monitor app crashes, but NO identifiable financial information is associated with these reports.
+## 2. Permissions & Usage
+To provide the app's core functionality, we may request the following permissions:
+- **Storage/Media**: Only used if you explicitly choose to export your data to a CSV file.
+- **Notifications**: Used for local budget alerts and reminders (No data is sent over the internet for this).
 
-## 4. User Data Ownership
-Your data belongs to you. Since it is entirely stored locally, uninstalling the app without backing up will permanently delete your records.
+## 3. Third-Party Analytics
+We may use anonymized, non-financial crash reporting tools (e.g., Google Firebase Crashlytics) to improve app stability. These reports do not contain your transaction data or any personally identifiable information.
 
-## Contact
-support@pocketledger.app
+## 4. User Control & Data Deletion
+Since we do not store your data, you have absolute control over it.
+- **Deletion**: You can delete all your data at any time using the "Wipe Data" function in the app settings, or by uninstalling the app.
+- **Backup**: You are responsible for backing up your data using the CSV export feature.
+
+## 5. Contact Us
+If you have any questions about this Privacy Policy, please contact us at: **support@pocketledger.app**

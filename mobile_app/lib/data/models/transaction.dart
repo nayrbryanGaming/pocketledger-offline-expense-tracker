@@ -1,5 +1,3 @@
-import 'category.dart';
-
 class AppTransaction {
   final int? id;
   final String title;
@@ -21,7 +19,7 @@ class AppTransaction {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'title': title,
       'amount': amount,
       'type': type,
@@ -40,6 +38,26 @@ class AppTransaction {
       categoryId: map['category_id']?.toInt() ?? 0,
       date: DateTime.parse(map['date']),
       note: map['note'] ?? '',
+    );
+  }
+
+  AppTransaction copyWith({
+    int? id,
+    String? title,
+    double? amount,
+    String? type,
+    int? categoryId,
+    DateTime? date,
+    String? note,
+  }) {
+    return AppTransaction(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      amount: amount ?? this.amount,
+      type: type ?? this.type,
+      categoryId: categoryId ?? this.categoryId,
+      date: date ?? this.date,
+      note: note ?? this.note,
     );
   }
 }

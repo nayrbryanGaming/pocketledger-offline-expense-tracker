@@ -1,130 +1,217 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import '../../services/providers.dart';
+import '../add_transaction/add_transaction_sheet.dart';
+import '../settings/settings_screen.dart';
+import '../analytics/analytics_screen.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final balanceAsyncValue = ref.watch(balanceProvider);
-    final transactionsAsyncValue = ref.watch(transactionsProvider);
+    final balance = ref.watch(balanceProvider);
+    final transactionsAsync = ref.watch(transactionsProvider);
+    final isDark = AdaptiveTheme.of(context).mode.isDark;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
-      appBar: AppBar(
-        title: const Text('PocketLedger', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-        backgroundColor: const Color(0xFF0F172A),
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings, color: Colors.white),
-            onPressed: () {},
-          )
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 16),
-            const Text('Total Balance', style: TextStyle(color: Colors.white70, fontSize: 14)),
-            const SizedBox(height: 4),
-            balanceAsyncValue.when(
-              data: (balance) => Text(
-                'Rp ${balance.toStringAsFixed(0)}',
-                style: const TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold),
-              ),
-              loading: () => const Text('Rp ...', style: TextStyle(color: Colors.white, fontSize: 36)),
-              error: (e, st) => const Text('Error', style: TextStyle(color: Colors.red)),
-            ),
-            const SizedBox(height: 32),
-            Container(
-              height: 200,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E293B),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: BarChart(
-                BarChartData(
-                  borderData: FlBorderData(show: false),
-                  titlesData: FlTitlesData(
-                    show: true,
-                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          return Text('D${value.toInt()}', style: const TextStyle(color: Colors.white54, fontSize: 10));
-                        },
-                      ),
-                    ),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 220,
+            floating: false,
+            pinned: true,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            elevation: 0,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xFF10B981),
+                      const Color(0xFF10B981).withOpacity(0.7),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  barGroups: [
-                    BarChartGroupData(x: 1, barRods: [BarChartRodData(toY: 10, color: const Color(0xFFEF4444))]),
-                    BarChartGroupData(x: 2, barRods: [BarChartRodData(toY: 5, color: const Color(0xFFEF4444))]),
-                    BarChartGroupData(x: 3, barRods: [BarChartRodData(toY: 20, color: const Color(0xFFEF4444))]),
-                    BarChartGroupData(x: 4, barRods: [BarChartRodData(toY: 15, color: const Color(0xFFEF4444))]),
-                    BarChartGroupData(x: 5, barRods: [BarChartRodData(toY: 8, color: const Color(0xFFEF4444))]),
-                  ]
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 48),
+                      Text(
+                        'Total Balance',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.8),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Rp ${balance.toStringAsFixed(0)}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ).animate().fadeIn(duration: 600.ms).scale(delay: 200.ms),
+                    ],
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 32),
-            const Text('Recent Transactions', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            Expanded(
-              child: transactionsAsyncValue.when(
-                data: (transactions) {
-                  if (transactions.isEmpty) {
-                    return const Center(child: Text('No transactions yet.', style: TextStyle(color: Colors.white54)));
-                  }
-                  return ListView.builder(
-                    itemCount: transactions.length,
-                    itemBuilder: (context, index) {
-                      final t = transactions[index];
-                      final isIncome = t.type == 'income';
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: isIncome ? const Color(0xFF10B981).withOpacity(0.2) : const Color(0xFFEF4444).withOpacity(0.2),
-                          child: Icon(
-                            isIncome ? Icons.arrow_downward : Icons.arrow_upward,
-                            color: isIncome ? const Color(0xFF10B981) : const Color(0xFFEF4444),
-                          ),
-                        ),
-                        title: Text(t.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                        subtitle: Text(t.date.toString().substring(0, 10), style: const TextStyle(color: Colors.white54, fontSize: 12)),
-                        trailing: Text(
-                          '${isIncome ? '+' : '-'} Rp ${t.amount.toStringAsFixed(0)}',
-                          style: TextStyle(
-                            color: isIncome ? const Color(0xFF10B981) : const Color(0xFFEF4444),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF10B981))),
-                error: (e, st) => Center(child: Text('Error: $e', style: const TextStyle(color: Colors.red))),
+            actions: [
+              IconButton(
+                icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+                onPressed: () => AdaptiveTheme.of(context).toggleThemeMode(),
+              ),
+            ],
+          ),
+          
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionTitle('Active Spending'),
+                  const SizedBox(height: 16),
+                  _buildSpendingChart(ref),
+                  const SizedBox(height: 24),
+                  _buildSectionTitle('Recent Transactions'),
+                  const SizedBox(height: 16),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+          
+          transactionsAsync.when(
+            data: (transactions) {
+              if (transactions.isEmpty) {
+                return const SliverFillRemaining(
+                  child: Center(
+                    child: Text('No transactions yet.', style: TextStyle(color: Colors.grey)),
+                  ),
+                );
+              }
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final t = transactions[index];
+                    final isIncome = t.type == 'income';
+                    return ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: (isIncome ? Colors.green : Colors.red).withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          isIncome ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
+                          color: isIncome ? Colors.green : Colors.red,
+                        ),
+                      ),
+                      title: Text(t.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text(t.date.toString().substring(0, 10)),
+                      trailing: Text(
+                        '${isIncome ? '+' : '-'} Rp ${t.amount.toStringAsFixed(0)}',
+                        style: TextStyle(
+                          color: isIncome ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ).animate().fadeIn(delay: (index * 50).ms).slideX(begin: 0.1);
+                  },
+                  childCount: transactions.length,
+                ),
+              );
+            },
+            loading: () => const SliverFillRemaining(
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (e, st) => SliverFillRemaining(
+              child: Center(child: Text('Error: $e')),
+            ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         backgroundColor: const Color(0xFF10B981),
-        child: const Icon(Icons.add, color: Colors.white),
-        onPressed: () {
-          // Open Add Transaction
-        },
+        onPressed: () => _showAddTransaction(context),
+        label: const Text('Add Transaction', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        icon: const Icon(Icons.add, color: Colors.white),
+      ).animate().scale(delay: 500.ms),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget _buildSpendingChart(WidgetRef ref) {
+    final spendingData = ref.watch(monthlySpendingProvider);
+    
+    return Container(
+      height: 200,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.grey.withOpacity(0.1)),
       ),
+      child: spendingData.isEmpty 
+        ? const Center(child: Text('Add an expense to see trends', style: TextStyle(fontSize: 12, color: Colors.grey)))
+        : BarChart(
+            BarChartData(
+              borderData: FlBorderData(show: false),
+              gridData: FlGridData(show: false),
+              titlesData: FlTitlesData(
+                leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, meta) {
+                      return Text(value.toInt().toString(), style: const TextStyle(fontSize: 10, color: Colors.grey));
+                    },
+                  ),
+                ),
+              ),
+              barGroups: spendingData.entries.map((e) {
+                return BarChartGroupData(
+                  x: int.parse(e.key),
+                  barRods: [
+                    BarChartRodData(
+                      toY: e.value,
+                      color: const Color(0xFF10B981),
+                      width: 14,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+    );
+  }
+
+  void _showAddTransaction(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const AddTransactionSheet(),
     );
   }
 }

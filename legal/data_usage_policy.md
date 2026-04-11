@@ -1,11 +1,21 @@
 # PocketLedger Data Usage Policy
 
-**Core Principles:**
-1. **Privacy By Default:** All financial logs are stored inside an encrypted local SQLite database mapped to your device's filesystem.
-2. **No Silent Uploads:** We do not silently push your logs to PocketLedger servers.
-3. **Analytics:** We utilize anonymized usage metrics (e.g., "User tapped 'Add Expense' 5 times") via standard crashlytics platforms entirely un-linked from financial data values.
+**PocketLedger is committed to complete data transparency.**
 
-**Your Rights:**
-At any time, you can invoke the "Wipe All Data" function in the app settings, which fully drops all local SQLite tables.
+### Data Storage Architecture
+- **Technology**: Local SQLite Database.
+- **Location**: `/data/user/0/com.pocketledger.app/app_flutter/pocketledger_v2.db` (Internal app storage).
+- **Encryption**: Data is protected by the operating system's standard application sandboxing.
 
-By using PocketLedger, you acknowledge this localized data topology.
+### How We Use Your Data
+1. **Application Logic**: To calculate your total balance, monthly spending, and category distributions.
+2. **Visualizations**: To generate local charts using the `fl_chart` library.
+3. **User Exports**: To generate CSV files at your request.
+
+### What We NEVER Do
+- We NEVER sell your data.
+- We NEVER share transaction history with advertisers.
+- We NEVER silent-sync data in the background.
+
+### User Rights (GDPR/CCPA Compliance)
+As an offline-only user, you have the ultimate right of access and erasure. Deleting the app filesystem via your device settings or the in-app "Wipe" function immediately and permanently destroys all records.
