@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/providers.dart';
 import '../../data/models/transaction.dart';
@@ -72,18 +73,58 @@ class _AddTransactionSheetState extends ConsumerState<AddTransactionSheet> {
                 validator: (v) => (double.tryParse(v ?? '') ?? 0) <= 0 ? 'Enter a valid amount' : null,
               ),
               const SizedBox(height: 16),
+              const SizedBox(height: 16),
+              const Text('Select Category', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
               categoriesAsync.when(
-                data: (categories) => DropdownButtonFormField<int>(
-                  decoration: _inputDecoration('Category', Icons.category),
-                  items: categories.map((c) => DropdownMenuItem(
-                    value: c.id,
-                    child: Text('${c.icon} ${c.name}'),
-                  )).toList(),
-                  onChanged: (v) => setState(() => _categoryId = v),
-                  validator: (v) => v == null ? 'Select a category' : null,
+                data: (categories) => GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 1.2,
+                  ),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    final cat = categories[index];
+                    final isSelected = _categoryId == cat.id;
+                    return InkWell(
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        setState(() => _categoryId = cat.id);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isSelected ? const Color(0xFF10B981).withOpacity(0.1) : Colors.transparent,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isSelected ? const Color(0xFF10B981) : Colors.grey.withOpacity(0.2),
+                            width: 2,
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(cat.icon, style: const TextStyle(fontSize: 24)),
+                            const SizedBox(height: 4),
+                            Text(
+                              cat.name,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                color: isSelected ? const Color(0xFF10B981) : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                loading: () => const CircularProgressIndicator(),
-                error: (e, st) => Text('Error loading categories'),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, st) => Text('Error: $e'),
               ),
               const SizedBox(height: 32),
               SizedBox(

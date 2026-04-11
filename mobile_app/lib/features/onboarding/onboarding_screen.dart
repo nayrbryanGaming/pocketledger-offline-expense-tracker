@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboard/dashboard_screen.dart';
 
@@ -18,19 +19,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     OnboardingData(
       title: 'Privacy First',
       description: 'Your financial logs stay entirely on your device. No cloud sync, no tracking, total privacy.',
-      icon: Icons.security_outlined,
+      lottieUrl: 'https://assets10.lottiefiles.com/packages/lf20_ndp7p0re.json', // Security/Privacy animation
       color: const Color(0xFF10B981),
     ),
     OnboardingData(
       title: 'Ultra Fast Logging',
       description: 'Record expenses in seconds with zero latency. No loading spinners, ever.',
-      icon: Icons.bolt_outlined,
+      lottieUrl: 'https://assets2.lottiefiles.com/packages/lf20_m69yidvw.json', // Rocket/Speed animation
       color: const Color(0xFFFBBF24),
     ),
     OnboardingData(
       title: 'Smart Analytics',
       description: 'Beautiful, interactive charts to help you master your budget offline.',
-      icon: Icons.bar_chart_outlined,
+      lottieUrl: 'https://assets5.lottiefiles.com/packages/lf20_qpwb7iub.json', // Chart/Data animation
       color: const Color(0xFF3B82F6),
     ),
   ];
@@ -52,8 +53,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(page.icon, size: 120, color: page.color)
-                      .animate().scale(duration: 600.ms, curve: Curves.backOut),
+                    SizedBox(
+                      height: 200,
+                      child: Lottie.network(page.lottieUrl, repeat: true, fit: BoxFit.contain),
+                    ).animate().scale(duration: 600.ms, curve: Curves.backOut),
                     const SizedBox(height: 48),
                     Text(
                       page.title,
@@ -129,7 +132,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 class OnboardingData {
   final String title;
   final String description;
-  final IconData icon;
+  final String lottieUrl;
   final Color color;
-  OnboardingData({required this.title, required this.description, required this.icon, required this.color});
+  OnboardingData({required this.title, required this.description, required this.lottieUrl, required this.color});
 }

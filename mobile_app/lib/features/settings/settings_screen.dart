@@ -28,18 +28,38 @@ class SettingsScreen extends ConsumerWidget {
             onChanged: (v) => AdaptiveTheme.of(context).toggleThemeMode(),
           ),
           const Divider(),
-          _buildSectionHeader('Data Safety & Privacy'),
-          ListTile(
-            title: const Text('Local Storage Only'),
-            subtitle: const Text('Your data is stored in an encrypted database on this device. No information is transmitted to any cloud servers.'),
-            leading: const Icon(Icons.lock_person_outlined, color: Color(0xFF10B981)),
+          _buildSectionHeader('Security & Privacy'),
+          Consumer(
+            builder: (context, ref, child) {
+              final security = ref.watch(securityProvider);
+              return FutureBuilder<bool>(
+                future: security.isBiometricAvailable(),
+                builder: (context, snapshot) {
+                  if (snapshot.data == true) {
+                    return SwitchListTile(
+                      title: const Text('Biometric Lock'),
+                      subtitle: const Text('Unlock with Fingerprint or FaceID.'),
+                      secondary: const Icon(Icons.fingerprint, color: Color(0xFF10B981)),
+                      value: ref.watch(biometricEnabledProvider),
+                      onChanged: (v) async {
+                        await SecurityService.toggleSecurity(v);
+                        ref.read(biometricEnabledProvider.notifier).state = v;
+                      },
+                    );
+                  }
+                  return const SizedBox();
+                },
+              );
+            },
           ),
           ListTile(
-            title: const Text('User Autonomy'),
-            subtitle: const Text('You have 100% control. We cannot access, see, or delete your data remotely.'),
-            leading: const Icon(Icons.verified_user_outlined, color: Color(0xFF10B981)),
+            title: const Text('Default Currency'),
+            subtitle: Text('Current: ${ref.watch(currencyProvider)}'),
+            leading: const Icon(Icons.attach_money, color: Color(0xFF10B981)),
+            onTap: () => _showCurrencyPicker(context, ref),
           ),
           const Divider(),
+          _buildSectionHeader('Data Safety & Privacy'),
           _buildSectionHeader('Data Management'),
           ListTile(
             title: const Text('Export JSON / CSV'),
@@ -91,6 +111,39 @@ class SettingsScreen extends ConsumerWidget {
         title,
         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF10B981)),
       ),
+    );
+  }
+
+  void _showCurrencyPicker(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      shape: const BorderRadius.vertical(top: Radius.circular(24)),
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Select Currency', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            _currencyItem(context, ref, 'IDR', 'Indonesian Rupiah (Rp)'),
+            _currencyItem(context, ref, 'USD', 'US Dollar (\$)'),
+            _currencyItem(context, ref, 'EUR', 'Euro (€)'),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _currencyItem(BuildContext context, WidgetRef ref, String code, String name) {
+    final current = ref.watch(currencyProvider);
+    return ListTile(
+      title: Text(name),
+      trailing: current == code ? const Icon(Icons.check, color: Color(0xFF10B981)) : null,
+      onTap: () {
+        ref.read(currencyProvider.notifier).state = code;
+        Navigator.pop(context);
+      },
     );
   }
 

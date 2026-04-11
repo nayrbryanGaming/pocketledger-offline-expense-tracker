@@ -11,12 +11,23 @@ void main() async {
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
   final prefs = await SharedPreferences.getInstance();
   final onboardingDone = prefs.getBool('onboarding_done') ?? false;
+  final securityEnabled = prefs.getBool('biometric_enabled') ?? false;
+
+  bool isAuthenticated = !securityEnabled;
+  if (securityEnabled) {
+    final security = SecurityService();
+    isAuthenticated = await security.authenticate();
+  }
 
   runApp(
     ProviderScope(
+      overrides: [
+        biometricEnabledProvider.overrideWith((ref) => securityEnabled),
+      ],
       child: PocketLedgerApp(
         savedThemeMode: savedThemeMode,
         showOnboarding: !onboardingDone,
+        startAuthenticated: isAuthenticated,
       ),
     ),
   );
@@ -25,11 +36,13 @@ void main() async {
 class PocketLedgerApp extends StatelessWidget {
   final AdaptiveThemeMode? savedThemeMode;
   final bool showOnboarding;
+  final bool startAuthenticated;
   
   const PocketLedgerApp({
     Key? key, 
     this.savedThemeMode,
     required this.showOnboarding,
+    required this.startAuthenticated,
   }) : super(key: key);
 
   @override
@@ -63,7 +76,47 @@ class PocketLedgerApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: theme,
         darkTheme: darkTheme,
-        home: showOnboarding ? const OnboardingScreen() : const DashboardScreen(),
+        home: _getHome(),
+      ),
+    );
+  }
+
+  Widget _getHome() {
+    if (!startAuthenticated) {
+      return const AuthLockScreen();
+    }
+    return showOnboarding ? const OnboardingScreen() : const DashboardScreen();
+  }
+}
+
+class AuthLockScreen extends ConsumerWidget {
+  const AuthLockScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.lock_outline, size: 80, color: Color(0xFF10B981)),
+            const SizedBox(height: 24),
+            const Text('App Locked', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 48),
+            ElevatedButton(
+              onPressed: () async {
+                final success = await ref.read(securityProvider).authenticate();
+                if (success) {
+                  Navigator.pushReplacement(
+                    context, 
+                    MaterialPageRoute(builder: (c) => const DashboardScreen())
+                  );
+                }
+              },
+              child: const Text('Unlock with Biometrics'),
+            ),
+          ],
+        ),
       ),
     );
   }

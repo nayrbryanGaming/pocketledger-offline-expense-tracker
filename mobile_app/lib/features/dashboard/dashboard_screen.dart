@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
-import '../../services/providers.dart';
+import '../services/providers.dart';
+import '../services/security_service.dart';
+import '../../core/utils/currency_formatter.dart';
 import '../add_transaction/add_transaction_sheet.dart';
 import '../settings/settings_screen.dart';
 import '../analytics/analytics_screen.dart';
@@ -82,21 +84,40 @@ class DashboardScreen extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(height: 48),
-                        Text(
-                          'Available Balance',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1.2,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Available Balance',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            InkWell(
+                              onTap: () {
+                                HapticFeedback.mediumImpact();
+                                ref.read(privacyModeProvider.notifier).state = !ref.read(privacyModeProvider);
+                              },
+                              child: Icon(
+                                ref.watch(privacyModeProvider) ? Icons.visibility_off : Icons.visibility,
+                                color: Colors.white.withOpacity(0.8),
+                                size: 16,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Rp ${balance.toStringAsFixed(0)}',
+                          ref.watch(privacyModeProvider) 
+                            ? '••••••••' 
+                            : CurrencyFormatter.format(balance, ref.watch(currencyProvider)),
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 44,
+                            fontSize: 36,
                             fontWeight: FontWeight.w900,
                             letterSpacing: -1,
                           ),
@@ -141,7 +162,7 @@ class DashboardScreen extends ConsumerWidget {
                         child: _buildSummaryCard(
                           context,
                           'Monthly Income',
-                          'Rp ${monthlyIncome.toStringAsFixed(0)}',
+                          ref.watch(privacyModeProvider) ? '••••' : CurrencyFormatter.format(monthlyIncome, ref.watch(currencyProvider)),
                           const Color(0xFF10B981),
                           Icons.arrow_upward,
                         ),
@@ -151,7 +172,7 @@ class DashboardScreen extends ConsumerWidget {
                         child: _buildSummaryCard(
                           context,
                           'Monthly Expense',
-                          'Rp ${monthlyExpense.toStringAsFixed(0)}',
+                          ref.watch(privacyModeProvider) ? '••••' : CurrencyFormatter.format(monthlyExpense, ref.watch(currencyProvider)),
                           Colors.redAccent,
                           Icons.arrow_downward,
                         ),
@@ -209,7 +230,7 @@ class DashboardScreen extends ConsumerWidget {
                   child: EmptyStateWidget(
                     title: 'No Transactions',
                     message: 'Your financial journey starts with a single tap. Add your first log below!',
-                    icon: Icons.receipt_long_outlined,
+                    lottieUrl: 'https://assets9.lottiefiles.com/packages/lf20_m69yidvw.json',
                   ),
                 );
               }
@@ -232,13 +253,12 @@ class DashboardScreen extends ConsumerWidget {
                         ),
                       ),
                       title: Text(t.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text(t.date.toString().substring(0, 10)),
+                      subtitle: Text(DateFormat.yMMMd().format(t.date), style: const TextStyle(fontSize: 12)),
                       trailing: Text(
-                        '${isIncome ? '+' : '-'} Rp ${t.amount.toStringAsFixed(0)}',
+                        ref.watch(privacyModeProvider) ? '••••' : '${t.type == 'income' ? '+' : '-'} ${CurrencyFormatter.format(t.amount, ref.watch(currencyProvider))}',
                         style: TextStyle(
-                          color: isIncome ? Colors.green : Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          color: t.type == 'income' ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ).animate().fadeIn(delay: (index * 50).ms).slideX(begin: 0.1);

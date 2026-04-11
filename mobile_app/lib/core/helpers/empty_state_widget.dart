@@ -1,16 +1,16 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:lottie/lottie.dart';
 
 class EmptyStateWidget extends StatelessWidget {
   final String title;
   final String message;
-  final IconData icon;
+  final String lottieUrl;
 
   const EmptyStateWidget({
     Key? key,
     required this.title,
     required this.message,
-    required this.icon,
+    required this.lottieUrl,
   }) : super(key: key);
 
   @override
@@ -21,17 +21,9 @@ class EmptyStateWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: const Color(0xFF10B981).withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                size: 64,
-                color: const Color(0xFF10B981),
-              ),
+            SizedBox(
+              height: 200,
+              child: Lottie.network(lottieUrl, repeat: true, fit: BoxFit.contain),
             ).animate(onPlay: (controller) => controller.repeat(reverse: true))
               .scale(duration: 2.seconds, begin: const Offset(0.9, 0.9), end: const Offset(1.1, 1.1))
               .shimmer(delay: 3.seconds),

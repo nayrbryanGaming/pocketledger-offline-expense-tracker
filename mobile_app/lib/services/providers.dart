@@ -1,7 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../data/models/transaction.dart';
 import '../data/models/category.dart';
 import 'database_service.dart';
+import '../services/security_service.dart';
+
+final securityProvider = Provider((ref) => SecurityService());
+
+final biometricEnabledProvider = StateProvider<bool>((ref) => false);
+
+final currencyProvider = StateProvider<String>((ref) => 'IDR');
+
+final privacyModeProvider = StateProvider<bool>((ref) => false);
 
 final databaseProvider = Provider<DatabaseService>((ref) => DatabaseService());
 
