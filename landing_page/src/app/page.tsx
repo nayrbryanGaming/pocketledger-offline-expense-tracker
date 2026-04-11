@@ -129,18 +129,18 @@ export default function Home() {
            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="bg-slate-900/50 border border-slate-800 p-10 rounded-[2.5rem] hover:bg-slate-800/50 transition-all group">
                  <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-110 transition-all font-bold text-2xl font-mono">⚡</div>
-                 <h3 className="text-2xl font-bold text-white mb-4">Zero Latency</h3>
-                 <p className="text-slate-400 leading-relaxed">Local-first architecture means transaction entry happens at the speed of thought. No loading spinners, ever.</p>
+                 <h3 className="text-2xl font-bold text-white mb-4">Instant Budgeting</h3>
+                 <p className="text-slate-400 leading-relaxed">Set monthly limits for any category with a single tap. Visual progress bars keep you accountable 24/7 without needing an account.</p>
               </div>
               <div className="bg-slate-900/50 border border-slate-800 p-10 rounded-[2.5rem] hover:bg-slate-800/50 transition-all group">
                  <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 mb-6 group-hover:scale-110 transition-all font-bold text-2xl font-mono">🔒</div>
                  <h3 className="text-2xl font-bold text-white mb-4">Hardened Privacy</h3>
-                 <p className="text-slate-400 leading-relaxed">Your data never leaves your device. Not even for us. Full database control is in your hands via SQLite.</p>
+                 <p className="text-slate-400 leading-relaxed">Your data never leaves your device. Not even for us. Full database control is in your hands via local SQLite encryption.</p>
               </div>
               <div className="bg-slate-900/50 border border-slate-800 p-10 rounded-[2.5rem] hover:bg-slate-800/50 transition-all group">
                  <div className="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500 mb-6 group-hover:scale-110 transition-all font-bold text-2xl font-mono">📉</div>
-                 <h3 className="text-2xl font-bold text-white mb-4">Smart Trends</h3>
-                 <p className="text-slate-400 leading-relaxed">Beautiful interactive charts powered by high-performance local analytics. View spending by category instantly.</p>
+                 <h3 className="text-2xl font-bold text-white mb-4">Elite Analytics</h3>
+                 <p className="text-slate-400 leading-relaxed">Compare this month vs last month with precision. Beautiful interactive charts powered by high-performance local data engine.</p>
               </div>
            </div>
         </section>

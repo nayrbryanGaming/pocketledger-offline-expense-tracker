@@ -1,3 +1,5 @@
+import 'dart:ui';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -7,15 +9,32 @@ import '../../services/providers.dart';
 import '../add_transaction/add_transaction_sheet.dart';
 import '../settings/settings_screen.dart';
 import '../analytics/analytics_screen.dart';
+import '../../core/helpers/empty_state_widget.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final balance = ref.watch(balanceProvider);
     final transactionsAsync = ref.watch(transactionsProvider);
-    final isDark = AdaptiveTheme.of(context).mode.isDark;
+    final balance = ref.watch(balanceProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Calculate monthly totals
+    double monthlyIncome = 0;
+    double monthlyExpense = 0;
+    transactionsAsync.whenData((txs) {
+      final now = DateTime.now();
+      for (var t in txs) {
+        if (t.date.month == now.month && t.date.year == now.year) {
+          if (t.type == 'income') {
+            monthlyIncome += t.amount;
+          } else {
+            monthlyExpense += t.amount;
+          }
+        }
+      }
+    });
 
     return Scaffold(
       body: CustomScrollView(
@@ -24,51 +43,82 @@ class DashboardScreen extends ConsumerWidget {
             expandedHeight: 220,
             floating: false,
             pinned: true,
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            stretch: true,
+            backgroundColor: Colors.transparent,
             elevation: 0,
             flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFF10B981),
-                      const Color(0xFF10B981).withOpacity(0.7),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+              collapseMode: CollapseMode.pin,
+              background: Stack(
+                children: [
+                   // Gradient Background
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          const Color(0xFF10B981),
+                          const Color(0xFF10B981).withOpacity(0.8),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
                   ),
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 48),
-                      Text(
-                        'Total Balance',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                  
+                  // Blurry Glass Overlayer
+                  ClipRRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.05),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Rp ${balance.toStringAsFixed(0)}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ).animate().fadeIn(duration: 600.ms).scale(delay: 200.ms),
-                    ],
+                    ),
                   ),
-                ),
+                  
+                  // Balance Content
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 48),
+                        Text(
+                          'Available Balance',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Rp ${balance.toStringAsFixed(0)}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 44,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -1,
+                          ),
+                        ).animate().fadeIn(duration: 800.ms).scale(delay: 200.ms),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
             actions: [
               IconButton(
-                icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+                icon: const Icon(Icons.analytics_outlined, color: Colors.white),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const AnalyticsScreen())),
+              ),
+              IconButton(
+                icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode, color: Colors.white),
                 onPressed: () => AdaptiveTheme.of(context).toggleThemeMode(),
+              ),
+              IconButton(
+                icon: const Icon(Icons.settings_outlined, color: Colors.white),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const SettingsScreen())),
               ),
             ],
           ),
@@ -82,6 +132,33 @@ class DashboardScreen extends ConsumerWidget {
                   _buildSectionTitle('Active Spending'),
                   const SizedBox(height: 16),
                   _buildSpendingChart(ref),
+                  const SizedBox(height: 24),
+
+                  // Monthly Summary Row
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildSummaryCard(
+                          context,
+                          'Monthly Income',
+                          'Rp ${monthlyIncome.toStringAsFixed(0)}',
+                          const Color(0xFF10B981),
+                          Icons.arrow_upward,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildSummaryCard(
+                          context,
+                          'Monthly Expense',
+                          'Rp ${monthlyExpense.toStringAsFixed(0)}',
+                          Colors.redAccent,
+                          Icons.arrow_downward,
+                        ),
+                      ),
+                    ],
+                  ),
+                  
                   const SizedBox(height: 24),
                   
                   // Search & Filter Row
@@ -104,6 +181,19 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                   
                   const SizedBox(height: 16),
+                  
+                  // Filter Chips
+                  Row(
+                    children: [
+                      _buildFilterChip(ref, null, 'All'),
+                      const SizedBox(width: 8),
+                      _buildFilterChip(ref, 'income', 'Income'),
+                      const SizedBox(width: 8),
+                      _buildFilterChip(ref, 'expense', 'Expense'),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 16),
                   _buildSectionTitle('Recent Transactions'),
                   const SizedBox(height: 16),
                 ],
@@ -115,8 +205,11 @@ class DashboardScreen extends ConsumerWidget {
             data: (transactions) {
               if (transactions.isEmpty) {
                 return const SliverFillRemaining(
-                  child: Center(
-                    child: Text('No transactions yet.', style: TextStyle(color: Colors.grey)),
+                  hasScrollBody: false,
+                  child: EmptyStateWidget(
+                    title: 'No Transactions',
+                    message: 'Your financial journey starts with a single tap. Add your first log below!',
+                    icon: Icons.receipt_long_outlined,
                   ),
                 );
               }
@@ -163,15 +256,22 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: const Color(0xFF10B981),
-        onPressed: () {
-          HapticFeedback.lightImpact();
-          _showAddTransaction(context);
-        },
-        label: const Text('Add Transaction', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        icon: const Icon(Icons.add, color: Colors.white),
-      ).animate().scale(delay: 500.ms),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: FloatingActionButton.extended(
+          backgroundColor: const Color(0xFF10B981),
+          foregroundColor: Colors.white,
+          elevation: 8,
+          highlightElevation: 12,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            _showAddTransaction(context);
+          },
+          label: const Text('New Transaction', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+          icon: const Icon(Icons.add_rounded, weight: 700),
+        ).animate().slideY(begin: 1.0, duration: 600.ms, curve: Curves.easeOutCirc).fadeIn(),
+      ),
     );
   }
 
@@ -179,6 +279,67 @@ class DashboardScreen extends ConsumerWidget {
     return Text(
       title,
       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget _buildSummaryCard(BuildContext context, String title, String value, Color color, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 14, color: color),
+              const SizedBox(width: 6),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: color.withOpacity(0.8),
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(WidgetRef ref, String? type, String label) {
+    final currentFilter = ref.watch(transactionsProvider.notifier).filterType;
+    final isActive = currentFilter == type;
+    
+    return ChoiceChip(
+      label: Text(label),
+      selected: isActive,
+      onSelected: (selected) {
+        if (selected) {
+          HapticFeedback.selectionClick();
+          ref.read(transactionsProvider.notifier).setFilterType(type);
+        }
+      },
+      selectedColor: const Color(0xFF10B981).withOpacity(0.2),
+      checkmarkColor: const Color(0xFF10B981),
+      labelStyle: TextStyle(
+        color: isActive ? const Color(0xFF10B981) : Colors.grey,
+        fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+      ),
     );
   }
 

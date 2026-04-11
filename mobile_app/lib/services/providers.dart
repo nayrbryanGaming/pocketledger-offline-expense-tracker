@@ -10,6 +10,8 @@ class TransactionsNotifier extends StateNotifier<AsyncValue<List<AppTransaction>
   String _searchQuery = '';
   String? _filterType; // 'income' or 'expense'
 
+  String? get filterType => _filterType;
+
   TransactionsNotifier(this._db) : super(const AsyncValue.loading()) {
     refresh();
   }
@@ -71,8 +73,11 @@ final transactionsProvider = StateNotifierProvider<TransactionsNotifier, AsyncVa
 });
 
 final categoriesProvider = FutureProvider<List<AppCategory>>((ref) async {
-  final db = ref.watch(databaseProvider);
-  return await db.getCategories();
+  return ref.watch(databaseProvider).getCategories();
+});
+
+final budgetsProvider = FutureProvider<List<AppBudget>>((ref) async {
+  return ref.watch(databaseProvider).getBudgets();
 });
 
 final balanceProvider = Provider<double>((ref) {

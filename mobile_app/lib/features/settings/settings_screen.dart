@@ -28,11 +28,23 @@ class SettingsScreen extends ConsumerWidget {
             onChanged: (v) => AdaptiveTheme.of(context).toggleThemeMode(),
           ),
           const Divider(),
+          _buildSectionHeader('Data Safety & Privacy'),
+          ListTile(
+            title: const Text('Local Storage Only'),
+            subtitle: const Text('Your data is stored in an encrypted database on this device. No information is transmitted to any cloud servers.'),
+            leading: const Icon(Icons.lock_person_outlined, color: Color(0xFF10B981)),
+          ),
+          ListTile(
+            title: const Text('User Autonomy'),
+            subtitle: const Text('You have 100% control. We cannot access, see, or delete your data remotely.'),
+            leading: const Icon(Icons.verified_user_outlined, color: Color(0xFF10B981)),
+          ),
+          const Divider(),
           _buildSectionHeader('Data Management'),
           ListTile(
-            title: const Text('Export CSV'),
-            subtitle: const Text('Export all transaction logs to a CSV file.'),
-            leading: const Icon(Icons.file_download, color: Color(0xFF10B981)),
+            title: const Text('Export JSON / CSV'),
+            subtitle: const Text('Generate a secure portable file of your entire financial history.'),
+            leading: const Icon(Icons.ios_share_outlined, color: Color(0xFF10B981)),
             onTap: () {
               transactionsAsync.whenData((txs) {
                 CSVExportService.exportTransactions(txs);
@@ -40,24 +52,24 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
           ListTile(
-            title: const Text('Wipe All Data'),
-            subtitle: const Text('Permanently delete all logs from this device.'),
-            leading: const Icon(Icons.delete_forever, color: Colors.red),
+            title: const Text('Flush All Data'),
+            subtitle: const Text('This will permanently delete the local SQLite database.'),
+            leading: const Icon(Icons.delete_sweep_outlined, color: Colors.red),
             onTap: () => _showWipeConfirmation(context, ref),
           ),
           const Divider(),
-          _buildSectionHeader('Product Info'),
+          _buildSectionHeader('Support & Legal'),
           ListTile(
-            title: const Text('PocketLedger version'),
-            subtitle: const Text('v2.0.0-PROD'),
-            leading: const Icon(Icons.info_outline, color: Color(0xFF10B981)),
+            title: const Text('PocketLedger Pro'),
+            subtitle: const Text('Version 2.0.0-ULTIMATE'),
+            leading: const Icon(Icons.auto_awesome_outlined, color: Color(0xFF10B981)),
           ),
           ListTile(
-            title: const Text('Data Usage Policy'),
-            subtitle: const Text('Understand how your data is handled offline.'),
-            leading: const Icon(Icons.security, color: Color(0xFF10B981)),
+            title: const Text('Privacy Policy'),
+            subtitle: const Text('Read our strict No-Cloud commitment.'),
+            leading: const Icon(Icons.gavel_outlined, color: Color(0xFF10B981)),
             onTap: () {
-              // Open local text view or in-app dialog for legal/data_usage_policy.md
+              // Navigation or launcher for privacy_policy.md
             },
           ),
           const SizedBox(height: 32),

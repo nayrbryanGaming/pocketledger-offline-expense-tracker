@@ -1,7 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import '../../services/providers.dart';
 import 'budget_progress_widget.dart';
+import 'set_budget_sheet.dart';
 import '../../data/models/budget.dart';
+import '../../data/models/category.dart';
 
 class AnalyticsScreen extends ConsumerWidget {
   const AnalyticsScreen({Key? key}) : super(key: key);
@@ -38,6 +40,10 @@ class AnalyticsScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
                 _buildTrendLineChart(transactions),
                 const SizedBox(height: 48),
+                _buildSectionHeader('This Month vs Last Month'),
+                const SizedBox(height: 24),
+                _buildComparisonChart(ref, transactions),
+                const SizedBox(height: 48),
               ],
             ),
           );
@@ -58,29 +64,49 @@ class AnalyticsScreen extends ConsumerWidget {
 
   Widget _buildBudgetList(WidgetRef ref, List transactions) {
      final categoriesAsync = ref.watch(categoriesProvider);
+     final budgetsAsync = ref.watch(budgetsProvider);
      
      return categoriesAsync.when(
        data: (categories) {
          final expenseTransactions = transactions.where((t) => t.type == 'expense');
          
-         return Column(
-           children: categories.where((c) => c.id != 6).map((cat) { // Skip "Salary" for budgeting
-             final spent = expenseTransactions
-                 .where((t) => t.categoryId == cat.id)
-                 .fold(0.0, (sum, t) => sum + t.amount);
-             
-             // Demo: Default limit of 1M if not set
-             return BudgetProgressWidget(
-               category: cat,
-               spent: spent,
-               limit: 1000000, 
-             );
-           }).toList(),
+         return budgetsAsync.when(
+           data: (budgets) => Column(
+             children: categories.where((c) => c.id != 6).map((cat) { // Skip "Salary"
+               final spent = expenseTransactions
+                   .where((t) => t.categoryId == cat.id)
+                   .fold(0.0, (sum, t) => sum + t.amount);
+               
+               final budget = budgets.where((b) => b.categoryId == cat.id).toList();
+               final limit = budget.isNotEmpty ? budget.first.limit : 1000000.0;
+               
+               return InkWell(
+                 onTap: () => _showSetBudget(ref.context, cat, budget.isNotEmpty ? budget.first : null),
+                 borderRadius: BorderRadius.circular(16),
+                 child: BudgetProgressWidget(
+                   category: cat,
+                   spent: spent,
+                   limit: limit, 
+                 ),
+               );
+             }).toList(),
+           ),
+           loading: () => const LinearProgressIndicator(),
+           error: (e, st) => Text('Budget Error: $e'),
          );
        },
-       loading: () => const LinearProgressIndicator(),
+       loading: () => const SizedBox(),
        error: (e, st) => Text('Error: $e'),
      );
+  }
+
+  void _showSetBudget(BuildContext context, AppCategory category, AppBudget? initialBudget) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => SetBudgetSheet(category: category, initialBudget: initialBudget),
+    );
   }
 
   Widget _buildCategoryPieChart(List transactions, AsyncValue categoriesAsync) {
@@ -138,6 +164,45 @@ class AnalyticsScreen extends ConsumerWidget {
                barWidth: 4,
                belowBarData: BarAreaData(show: true, color: const Color(0xFF10B981).withOpacity(0.1)),
              ),
+           ],
+         ),
+       ),
+     );
+  }
+
+  Widget _buildComparisonChart(WidgetRef ref, List transactions) {
+     final now = DateTime.now();
+     final lastMonth = DateTime(now.year, now.month - 1);
+     
+     final thisMonthSpending = transactions
+         .where((t) => t.type == 'expense' && t.date.month == now.month && t.date.year == now.year)
+         .fold(0.0, (sum, t) => sum + t.amount);
+         
+     final lastMonthSpending = transactions
+         .where((t) => t.type == 'expense' && t.date.month == lastMonth.month && t.date.year == lastMonth.year)
+         .fold(0.0, (sum, t) => sum + t.amount);
+
+     return Container(
+       height: 200,
+       padding: const EdgeInsets.symmetric(horizontal: 16),
+       child: BarChart(
+         BarChartData(
+           borderData: FlBorderData(show: false),
+           gridData: FlGridData(show: false),
+           titlesData: FlTitlesData(
+             leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+             bottomTitles: AxisTitles(
+               sideTitles: SideTitles(
+                 showTitles: true,
+                 getTitlesWidget: (value, meta) {
+                   return Text(value == 0 ? 'Last Month' : 'This Month', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold));
+                 },
+               ),
+             ),
+           ),
+           barGroups: [
+             BarChartGroupData(x: 0, barRods: [BarChartRodData(toY: lastMonthSpending, color: Colors.grey.withOpacity(0.5), width: 40, borderRadius: BorderRadius.circular(8))]),
+             BarChartGroupData(x: 1, barRods: [BarChartRodData(toY: thisMonthSpending, color: const Color(0xFF10B981), width: 40, borderRadius: BorderRadius.circular(8))]),
            ],
          ),
        ),
