@@ -7,14 +7,39 @@ final databaseProvider = Provider<DatabaseService>((ref) => DatabaseService());
 
 class TransactionsNotifier extends StateNotifier<AsyncValue<List<AppTransaction>>> {
   final DatabaseService _db;
+  String _searchQuery = '';
+  String? _filterType; // 'income' or 'expense'
+
   TransactionsNotifier(this._db) : super(const AsyncValue.loading()) {
+    refresh();
+  }
+
+  void setSearchQuery(String query) {
+    _searchQuery = query.toLowerCase();
+    refresh();
+  }
+
+  void setFilterType(String? type) {
+    _filterType = type;
     refresh();
   }
 
   Future<void> refresh() async {
     state = const AsyncValue.loading();
     try {
-      final transactions = await _db.getTransactions();
+      var transactions = await _db.getTransactions();
+      
+      if (_searchQuery.isNotEmpty) {
+        transactions = transactions.where((t) => 
+          t.title.toLowerCase().contains(_searchQuery) || 
+          t.note.toLowerCase().contains(_searchQuery)
+        ).toList();
+      }
+
+      if (_filterType != null) {
+        transactions = transactions.where((t) => t.type == _filterType).toList();
+      }
+
       state = AsyncValue.data(transactions);
     } catch (e, st) {
       state = AsyncValue.error(e, st);

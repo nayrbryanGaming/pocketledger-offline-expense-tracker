@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../services/providers.dart';
+import 'budget_progress_widget.dart';
+import '../../data/models/budget.dart';
 
 class AnalyticsScreen extends ConsumerWidget {
   const AnalyticsScreen({Key? key}) : super(key: key);
@@ -22,15 +22,19 @@ class AnalyticsScreen extends ConsumerWidget {
           if (transactions.isEmpty) return _buildEmptyState();
           
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                _buildSectionHeader('Monthly Budgets'),
+                const SizedBox(height: 16),
+                _buildBudgetList(ref, transactions),
+                const SizedBox(height: 32),
                 _buildSectionHeader('Category Breakdown'),
                 const SizedBox(height: 24),
                 _buildCategoryPieChart(transactions, categoriesAsync),
                 const SizedBox(height: 48),
-                _buildSectionHeader('Monthly Trend'),
+                _buildSectionHeader('Spending Trend'),
                 const SizedBox(height: 24),
                 _buildTrendLineChart(transactions),
                 const SizedBox(height: 48),
@@ -49,7 +53,34 @@ class AnalyticsScreen extends ConsumerWidget {
   }
 
   Widget _buildSectionHeader(String title) {
-    return Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold));
+    return Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold));
+  }
+
+  Widget _buildBudgetList(WidgetRef ref, List transactions) {
+     final categoriesAsync = ref.watch(categoriesProvider);
+     
+     return categoriesAsync.when(
+       data: (categories) {
+         final expenseTransactions = transactions.where((t) => t.type == 'expense');
+         
+         return Column(
+           children: categories.where((c) => c.id != 6).map((cat) { // Skip "Salary" for budgeting
+             final spent = expenseTransactions
+                 .where((t) => t.categoryId == cat.id)
+                 .fold(0.0, (sum, t) => sum + t.amount);
+             
+             // Demo: Default limit of 1M if not set
+             return BudgetProgressWidget(
+               category: cat,
+               spent: spent,
+               limit: 1000000, 
+             );
+           }).toList(),
+         );
+       },
+       loading: () => const LinearProgressIndicator(),
+       error: (e, st) => Text('Error: $e'),
+     );
   }
 
   Widget _buildCategoryPieChart(List transactions, AsyncValue categoriesAsync) {

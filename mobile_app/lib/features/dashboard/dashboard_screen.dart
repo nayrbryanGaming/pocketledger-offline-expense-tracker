@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -83,6 +83,27 @@ class DashboardScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                   _buildSpendingChart(ref),
                   const SizedBox(height: 24),
+                  
+                  // Search & Filter Row
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: TextField(
+                      decoration: const InputDecoration(
+                        hintText: 'Search transactions...',
+                        border: InputBorder.none,
+                        icon: Icon(Icons.search, size: 20, color: Colors.grey),
+                      ),
+                      onChanged: (v) {
+                        ref.read(transactionsProvider.notifier).setSearchQuery(v);
+                      },
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 16),
                   _buildSectionTitle('Recent Transactions'),
                   const SizedBox(height: 16),
                 ],
@@ -144,7 +165,10 @@ class DashboardScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: const Color(0xFF10B981),
-        onPressed: () => _showAddTransaction(context),
+        onPressed: () {
+          HapticFeedback.lightImpact();
+          _showAddTransaction(context);
+        },
         label: const Text('Add Transaction', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         icon: const Icon(Icons.add, color: Colors.white),
       ).animate().scale(delay: 500.ms),

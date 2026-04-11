@@ -2,21 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'features/dashboard/dashboard_screen.dart';
+import 'features/onboarding/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
+  final prefs = await SharedPreferences.getInstance();
+  final onboardingDone = prefs.getBool('onboarding_done') ?? false;
+
   runApp(
     ProviderScope(
-      child: PocketLedgerApp(savedThemeMode: savedThemeMode),
+      child: PocketLedgerApp(
+        savedThemeMode: savedThemeMode,
+        showOnboarding: !onboardingDone,
+      ),
     ),
   );
 }
 
 class PocketLedgerApp extends StatelessWidget {
   final AdaptiveThemeMode? savedThemeMode;
-  const PocketLedgerApp({Key? key, this.savedThemeMode}) : super(key: key);
+  final bool showOnboarding;
+  
+  const PocketLedgerApp({
+    Key? key, 
+    this.savedThemeMode,
+    required this.showOnboarding,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +63,7 @@ class PocketLedgerApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: theme,
         darkTheme: darkTheme,
-        home: const DashboardScreen(),
+        home: showOnboarding ? const OnboardingScreen() : const DashboardScreen(),
       ),
     );
   }

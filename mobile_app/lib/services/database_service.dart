@@ -108,6 +108,18 @@ class DatabaseService {
     return List.generate(maps.length, (i) => AppCategory.fromMap(maps[i]));
   }
 
+  // Budgets CRUD
+  Future<int> upsertBudget(AppBudget budget) async {
+    final db = await database;
+    return await db.insert('budgets', budget.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<List<AppBudget>> getBudgets() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('budgets');
+    return List.generate(maps.length, (i) => AppBudget.fromMap(maps[i]));
+  }
+
   Future<void> wipeAllData() async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
     final path = join(documentsDirectory.path, 'pocketledger_v2.db');
