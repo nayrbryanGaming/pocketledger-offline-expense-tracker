@@ -5,6 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
+import 'services/providers.dart';
+import 'services/security_service.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +15,13 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final onboardingDone = prefs.getBool('onboarding_done') ?? false;
   final securityEnabled = prefs.getBool('biometric_enabled') ?? false;
+
+  await NotificationService().init();
+  if (onboardingDone) {
+    if (prefs.getBool('notifications_enabled') ?? true) {
+      await NotificationService().scheduleDailyReminder();
+    }
+  }
 
   bool isAuthenticated = !securityEnabled;
   if (securityEnabled) {

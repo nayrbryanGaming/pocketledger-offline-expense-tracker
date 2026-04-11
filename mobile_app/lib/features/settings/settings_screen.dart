@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_review/in_app_review.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/providers.dart';
 import '../../services/export_service.dart';
+import '../../services/notification_service.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -60,7 +62,34 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () => _showCurrencyPicker(context, ref),
           ),
           const Divider(),
-          _buildSectionHeader('Data Safety & Privacy'),
+          _buildSectionHeader('Notifications'),
+          Consumer(
+            builder: (context, ref, child) {
+              return FutureBuilder<bool>(
+                future: SharedPreferences.getInstance().then((p) => p.getBool('notifications_enabled') ?? true),
+                builder: (context, snapshot) {
+                  final isEnabled = snapshot.data ?? true;
+                  return SwitchListTile(
+                    title: const Text('Daily Reminders'),
+                    subtitle: const Text('Get notified daily at 8:00 PM to log expenses.'),
+                    secondary: const Icon(Icons.notifications_active, color: Color(0xFF10B981)),
+                    value: isEnabled,
+                    onChanged: (v) async {
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.setBool('notifications_enabled', v);
+                      if (v) {
+                        await NotificationService().scheduleDailyReminder();
+                      } else {
+                        await NotificationService().cancelAllNotifications();
+                      }
+                      ref.read(transactionsProvider.notifier).refresh(); // Force rebuild to update switch UI temporarily
+                    },
+                  );
+                },
+              );
+            },
+          ),
+          const Divider(),
           _buildSectionHeader('Data Management'),
           ListTile(
             title: const Text('Export JSON / CSV'),

@@ -55,6 +55,8 @@ dependencies:
   shimmer: ^3.0.0
   smooth_page_indicator: ^2.0.1
   in_app_review: ^2.0.11
+  flutter_local_notifications: ^20.1.0
+  timezone: ^0.10.1
 
 dev_dependencies:
   flutter_test:
