@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:shimmer/shimmer.dart';
 import '../services/providers.dart';
 import '../services/security_service.dart';
 import '../../core/utils/currency_formatter.dart';
@@ -267,8 +268,33 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               );
             },
-            loading: () => const SliverFillRemaining(
-              child: Center(child: CircularProgressIndicator()),
+            loading: () => SliverFillRemaining(
+              child: Shimmer.fromColors(
+                baseColor: isDark ? Colors.grey[800]! : Colors.grey[300]!,
+                highlightColor: isDark ? Colors.grey[700]! : Colors.grey[100]!,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: 5,
+                  itemBuilder: (_, __) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(width: 40, height: 40, decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle)),
+                        const SizedBox(width: 16),
+                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Container(width: double.infinity, height: 16, color: Colors.white),
+                          const SizedBox(height: 8),
+                          Container(width: 100, height: 12, color: Colors.white),
+                        ])),
+                        const SizedBox(width: 16),
+                        Container(width: 80, height: 16, color: Colors.white),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
             error: (e, st) => SliverFillRemaining(
               child: Center(child: Text('Error: $e')),

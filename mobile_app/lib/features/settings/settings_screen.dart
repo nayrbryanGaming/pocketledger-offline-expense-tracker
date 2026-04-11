@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:in_app_review/in_app_review.dart';
 import '../../services/providers.dart';
 import '../../services/export_service.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
@@ -90,6 +91,17 @@ class SettingsScreen extends ConsumerWidget {
             leading: const Icon(Icons.gavel_outlined, color: Color(0xFF10B981)),
             onTap: () {
               // Navigation or launcher for privacy_policy.md
+            },
+          ),
+          ListTile(
+            title: const Text('Rate on Play Store'),
+            subtitle: const Text('Love the app? Leave 5 stars to support offline privacy!'),
+            leading: const Icon(Icons.star_rate_rounded, color: Colors.amber),
+            onTap: () async {
+              final InAppReview inAppReview = InAppReview.instance;
+              if (await inAppReview.isAvailable()) {
+                inAppReview.requestReview();
+              }
             },
           ),
           const SizedBox(height: 32),

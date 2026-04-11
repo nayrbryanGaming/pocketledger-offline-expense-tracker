@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'dashboard/dashboard_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -81,8 +82,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: List.generate(_pages.length, (index) => _buildIndicator(index == _currentPage)),
+                SmoothPageIndicator(
+                  controller: _controller,
+                  count: _pages.length,
+                  effect: const ExpandingDotsEffect(
+                    activeDotColor: Color(0xFF10B981),
+                    dotColor: Colors.grey,
+                    dotHeight: 8,
+                    dotWidth: 8,
+                    expansionFactor: 3,
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: _next,
@@ -100,19 +109,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildIndicator(bool isActive) {
-    return AnimatedContainer(
-      duration: 300.ms,
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      height: 8,
-      width: isActive ? 24 : 8,
-      decoration: BoxDecoration(
-        color: isActive ? const Color(0xFF10B981) : Colors.grey.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(4),
       ),
     );
   }

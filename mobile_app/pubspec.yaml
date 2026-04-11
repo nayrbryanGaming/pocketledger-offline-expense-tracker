@@ -52,6 +52,9 @@ dependencies:
   csv: ^6.0.0
   local_auth: ^3.0.1
   lottie: ^3.3.3
+  shimmer: ^3.0.0
+  smooth_page_indicator: ^2.0.1
+  in_app_review: ^2.0.11
 
 dev_dependencies:
   flutter_test:
