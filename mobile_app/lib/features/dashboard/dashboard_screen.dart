@@ -6,6 +6,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/providers.dart';
 import '../services/security_service.dart';
 import '../../core/utils/currency_formatter.dart';
@@ -22,6 +24,7 @@ class DashboardScreen extends ConsumerWidget {
     final transactionsAsync = ref.watch(transactionsProvider);
     final balance = ref.watch(balanceProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     // Calculate monthly totals
     double monthlyIncome = 0;
@@ -89,7 +92,7 @@ class DashboardScreen extends ConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Available Balance',
+                              l10n.appTitle,
                               style: TextStyle(
                                 color: Colors.white.withOpacity(0.8),
                                 fontSize: 14,
@@ -185,7 +188,7 @@ class DashboardScreen extends ConsumerWidget {
                     },
                   ),
 
-                  _buildSectionTitle('Active Spending'),
+                  _buildSectionTitle(l10n.expense), // Active Spending
                   const SizedBox(height: 16),
                   _buildSpendingChart(ref).animate().fadeIn(delay: 200.ms).scale(curve: Curves.backOut),
                   const SizedBox(height: 24),
@@ -196,7 +199,7 @@ class DashboardScreen extends ConsumerWidget {
                       Expanded(
                         child: _buildSummaryCard(
                           context,
-                          'Monthly Income',
+                          l10n.income,
                           ref.watch(privacyModeProvider) ? '••••' : CurrencyFormatter.format(monthlyIncome, ref.watch(currencyProvider)),
                           const Color(0xFF10B981),
                           Icons.arrow_upward,
@@ -206,7 +209,7 @@ class DashboardScreen extends ConsumerWidget {
                       Expanded(
                         child: _buildSummaryCard(
                           context,
-                          'Monthly Expense',
+                          l10n.expense,
                           ref.watch(privacyModeProvider) ? '••••' : CurrencyFormatter.format(monthlyExpense, ref.watch(currencyProvider)),
                           Colors.redAccent,
                           Icons.arrow_downward,
@@ -217,6 +220,86 @@ class DashboardScreen extends ConsumerWidget {
                   
                   const SizedBox(height: 24),
                   
+                  const SizedBox(height: 24),
+                  
+                  // Monthly Budget Progress
+                  ref.watch(budgetStatusProvider).when(
+                    data: (statuses) {
+                      if (statuses.isEmpty) return const SizedBox();
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSectionTitle(l10n.monthlyBudget),
+                          const SizedBox(height: 16),
+                          ...statuses.map((status) => Container(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(status.category.icon, style: const TextStyle(fontSize: 18)),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          status.category.name,
+                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      '${status.percent > 1 ? "EXCEEDED" : (status.percent * 100).toStringAsFixed(0)}%',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w900,
+                                        color: status.isOver ? Colors.red : const Color(0xFF10B981),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: LinearProgressIndicator(
+                                    value: status.percent,
+                                    minHeight: 8,
+                                    backgroundColor: Colors.grey.withOpacity(0.1),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      status.isOver ? Colors.red : (status.percent > 0.8 ? Colors.orange : const Color(0xFF10B981)),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Spent: ${CurrencyFormatter.format(status.spent, ref.watch(currencyProvider))}',
+                                      style: const TextStyle(fontSize: 11, color: Colors.grey),
+                                    ),
+                                    Text(
+                                      'Limit: ${CurrencyFormatter.format(status.limit, ref.watch(currencyProvider))}',
+                                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ).animate().fadeIn().slideX(begin: 0.1)),
+                          const SizedBox(height: 8),
+                        ],
+                      );
+                    },
+                    loading: () => const CircularProgressIndicator(),
+                    error: (_, __) => const SizedBox(),
+                  ),
+
                   // Search & Filter Row
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -226,7 +309,7 @@ class DashboardScreen extends ConsumerWidget {
                     ),
                     child: TextField(
                       decoration: const InputDecoration(
-                        hintText: 'Search transactions...',
+                        hintText: l10n.searchHint,
                         border: InputBorder.none,
                         icon: Icon(Icons.search, size: 20, color: Colors.grey),
                       ),
@@ -273,7 +356,7 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                   
                   const SizedBox(height: 16),
-                  _buildSectionTitle('Recent Transactions'),
+                  _buildSectionTitle(l10n.recentTransactions),
                   const SizedBox(height: 16),
                 ],
               ),
@@ -483,6 +566,17 @@ class DashboardScreen extends ConsumerWidget {
         ? const Center(child: Text('Add an expense to see trends', style: TextStyle(fontSize: 12, color: Colors.grey)))
         : BarChart(
             BarChartData(
+              barTouchData: BarTouchData(
+                touchTooltipData: BarTouchTooltipData(
+                  tooltipBgColor: const Color(0xFF0F172A),
+                  getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                    return BarTooltipItem(
+                      CurrencyFormatter.format(rod.toY, ref.watch(currencyProvider)),
+                      const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                    );
+                  },
+                ),
+              ),
               borderData: FlBorderData(show: false),
               gridData: FlGridData(show: false),
               titlesData: FlTitlesData(

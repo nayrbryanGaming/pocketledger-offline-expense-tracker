@@ -1,0 +1,22 @@
+{
+  "appTitle": "PocketLedger",
+  "dashboard": "Dashboard",
+  "settings": "Settings",
+  "addTransaction": "Add Transaction",
+  "income": "Income",
+  "expense": "Expense",
+  "monthlyBudget": "Monthly Budgets",
+  "recentTransactions": "Recent Transactions",
+  "noTransactions": "No transactions found. Tap + to start!",
+  "searchHint": "Search transactions...",
+  "privacyPolicy": "Privacy Policy",
+  "dataManagement": "Data Management",
+  "backupJson": "Backup to JSON",
+  "restoreJson": "Restore from JSON",
+  "flushData": "Flush All Data",
+  "manageCategories": "Manage Categories",
+  "monthlyLimit": "Monthly Limit",
+  "spent": "Spent",
+  "limit": "Limit",
+  "exceeded": "EXCEEDED"
+}

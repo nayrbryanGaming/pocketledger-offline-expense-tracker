@@ -12,6 +12,7 @@ final biometricEnabledProvider = StateProvider<bool>((ref) => false);
 final currencyProvider = StateProvider<String>((ref) => 'IDR');
 
 final privacyModeProvider = StateProvider<bool>((ref) => false);
+final localeProvider = StateProvider<Locale>((ref) => const Locale('en'));
 
 final databaseProvider = Provider<DatabaseService>((ref) => DatabaseService());
 
@@ -93,12 +94,63 @@ final transactionsProvider = StateNotifierProvider<TransactionsNotifier, AsyncVa
   return TransactionsNotifier(db);
 });
 
-final categoriesProvider = FutureProvider<List<AppCategory>>((ref) async {
-  return ref.watch(databaseProvider).getCategories();
+class CategoriesNotifier extends StateNotifier<AsyncValue<List<AppCategory>>> {
+  final DatabaseService _db;
+  CategoriesNotifier(this._db) : super(const AsyncValue.loading()) {
+    refresh();
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncValue.loading();
+    try {
+      final cats = await _db.getCategories();
+      state = AsyncValue.data(cats);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> addCategory(AppCategory category) async {
+    final db = await _db.database;
+    await db.insert('categories', category.toMap());
+    await refresh();
+  }
+
+  Future<void> deleteCategory(int id) async {
+    final db = await _db.database;
+    await db.delete('categories', where: 'id = ?', whereArgs: [id]);
+    await refresh();
+  }
+}
+
+final categoriesProvider = StateNotifierProvider<CategoriesNotifier, AsyncValue<List<AppCategory>>>((ref) {
+  return CategoriesNotifier(ref.watch(databaseProvider));
 });
 
-final budgetsProvider = FutureProvider<List<AppBudget>>((ref) async {
-  return ref.watch(databaseProvider).getBudgets();
+class BudgetsNotifier extends StateNotifier<AsyncValue<List<AppBudget>>> {
+  final DatabaseService _db;
+  BudgetsNotifier(this._db) : super(const AsyncValue.loading()) {
+    refresh();
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncValue.loading();
+    try {
+      final budgets = await _db.getBudgets();
+      state = AsyncValue.data(budgets);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> updateBudget(AppBudget budget) async {
+    await _db.upsertBudget(budget);
+    await refresh();
+  }
+}
+
+final budgetsProvider = StateNotifierProvider<BudgetsNotifier, AsyncValue<List<AppBudget>>>((ref) {
+  return BudgetsNotifier(ref.watch(databaseProvider));
 });
 
 final balanceProvider = Provider<double>((ref) {
@@ -161,4 +213,55 @@ final smartInsightsProvider = Provider<String?>((ref) {
     },
     orElse: () => null,
   );
+});
+
+class CategoryBudgetStatus {
+  final AppCategory category;
+  final double spent;
+  final double limit;
+  
+  CategoryBudgetStatus({required this.category, required this.spent, required this.limit});
+  
+  double get percent => limit > 0 ? (spent / limit).clamp(0.0, 1.0) : 0;
+  bool get isOver => spent > limit;
+}
+
+final budgetStatusProvider = Provider<AsyncValue<List<CategoryBudgetStatus>>>((ref) {
+  final transactionsAsync = ref.watch(transactionsProvider);
+  final budgetsAsync = ref.watch(budgetsProvider);
+  final categoriesAsync = ref.watch(categoriesProvider);
+
+  if (transactionsAsync is AsyncLoading || budgetsAsync is AsyncLoading || categoriesAsync is AsyncLoading) {
+    return const AsyncValue.loading();
+  }
+
+  try {
+    final transactions = transactionsAsync.value ?? [];
+    final budgets = budgetsAsync.value ?? [];
+    final categories = categoriesAsync.value ?? [];
+
+    final now = DateTime.now();
+    final thisMonthTransactions = transactions.where((t) => 
+      t.date.month == now.month && t.date.year == now.year && t.type == 'expense'
+    );
+
+    final List<CategoryBudgetStatus> statuses = [];
+
+    for (var budget in budgets) {
+      final category = categories.firstWhere((c) => c.id == budget.categoryId, orElse: () => AppCategory(name: 'Unknown', icon: '❓', color: '#64748B'));
+      final spent = thisMonthTransactions
+          .where((t) => t.categoryId == budget.categoryId)
+          .fold(0.0, (sum, t) => sum + t.amount);
+      
+      statuses.add(CategoryBudgetStatus(
+        category: category,
+        spent: spent,
+        limit: budget.limit,
+      ));
+    }
+
+    return AsyncValue.data(statuses);
+  } catch (e, st) {
+    return AsyncValue.error(e, st);
+  }
 });

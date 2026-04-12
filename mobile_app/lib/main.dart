@@ -10,6 +10,8 @@ import 'services/security_service.dart';
 import 'services/notification_service.dart';
 import 'services/database_service.dart';
 import 'services/recurring_engine.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,7 +50,7 @@ void main() async {
   );
 }
 
-class PocketLedgerApp extends StatelessWidget {
+class PocketLedgerApp extends ConsumerWidget {
   final AdaptiveThemeMode? savedThemeMode;
   final bool showOnboarding;
   final bool startAuthenticated;
@@ -61,7 +63,8 @@ class PocketLedgerApp extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(localeProvider);
     return AdaptiveTheme(
       light: ThemeData(
         brightness: Brightness.light,
@@ -91,6 +94,17 @@ class PocketLedgerApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: theme,
         darkTheme: darkTheme,
+        locale: locale,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('en'),
+          Locale('id'),
+        ],
         home: _getHome(),
       ),
     );

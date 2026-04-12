@@ -1,0 +1,22 @@
+{
+  "appTitle": "PocketLedger",
+  "dashboard": "Beranda",
+  "settings": "Pengaturan",
+  "addTransaction": "Tambah Transaksi",
+  "income": "Pemasukan",
+  "expense": "Pengeluaran",
+  "monthlyBudget": "Anggaran Bulanan",
+  "recentTransactions": "Transaksi Terakhir",
+  "noTransactions": "Belum ada transaksi. Ketuk + untuk mulai!",
+  "searchHint": "Cari transaksi...",
+  "privacyPolicy": "Kebijakan Privasi",
+  "dataManagement": "Manajemen Data",
+  "backupJson": "Cadangkan ke JSON",
+  "restoreJson": "Pulihkan dari JSON",
+  "flushData": "Hapus Semua Data",
+  "manageCategories": "Kelola Kategori",
+  "monthlyLimit": "Batas Bulanan",
+  "spent": "Terpakai",
+  "limit": "Batas",
+  "exceeded": "TERLAMPUI"
+}

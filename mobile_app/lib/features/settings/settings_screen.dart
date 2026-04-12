@@ -8,6 +8,7 @@ import '../../services/notification_service.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../services/backup_service.dart';
+import '../categories/category_manager_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -58,10 +59,25 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
           ListTile(
+            title: const Text('Language / Bahasa'),
+            subtitle: Text(ref.watch(localeProvider).languageCode == 'en' ? 'English' : 'Bahasa Indonesia'),
+            leading: const Icon(Icons.language, color: Color(0xFF10B981)),
+            onTap: () => _showLanguagePicker(context, ref),
+          ),
+          ListTile(
             title: const Text('Default Currency'),
             subtitle: Text('Current: ${ref.watch(currencyProvider)}'),
             leading: const Icon(Icons.attach_money, color: Color(0xFF10B981)),
             onTap: () => _showCurrencyPicker(context, ref),
+          ),
+          ListTile(
+            title: const Text('Manage Categories'),
+            subtitle: const Text('Add, Edit categories & Set Monthly Budgets.'),
+            leading: const Icon(Icons.category_outlined, color: Color(0xFF10B981)),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CategoryManagerScreen()),
+            ),
           ),
           const Divider(),
           _buildSectionHeader('Notifications'),
@@ -183,6 +199,41 @@ class SettingsScreen extends ConsumerWidget {
         title,
         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF10B981)),
       ),
+    );
+  }
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+// ... in build method or helpers
+  void _showLanguagePicker(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      shape: const BorderRadius.vertical(top: Radius.circular(24)),
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Select Language', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            _languageItem(context, ref, 'en', 'English'),
+            _languageItem(context, ref, 'id', 'Bahasa Indonesia'),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _languageItem(BuildContext context, WidgetRef ref, String code, String name) {
+    final current = ref.watch(localeProvider).languageCode;
+    return ListTile(
+      title: Text(name),
+      trailing: current == code ? const Icon(Icons.check, color: Color(0xFF10B981)) : null,
+      onTap: () {
+        ref.read(localeProvider.notifier).state = Locale(code);
+        Navigator.pop(context);
+      },
     );
   }
 
