@@ -19,8 +19,10 @@ class TransactionsNotifier extends StateNotifier<AsyncValue<List<AppTransaction>
   final DatabaseService _db;
   String _searchQuery = '';
   String? _filterType; // 'income' or 'expense'
+  int? _filterCategoryId;
 
   String? get filterType => _filterType;
+  int? get filterCategoryId => _filterCategoryId;
 
   TransactionsNotifier(this._db) : super(const AsyncValue.loading()) {
     refresh();
@@ -33,6 +35,11 @@ class TransactionsNotifier extends StateNotifier<AsyncValue<List<AppTransaction>
 
   void setFilterType(String? type) {
     _filterType = type;
+    refresh();
+  }
+
+  void setFilterCategory(int? categoryId) {
+    _filterCategoryId = categoryId;
     refresh();
   }
 
@@ -50,6 +57,10 @@ class TransactionsNotifier extends StateNotifier<AsyncValue<List<AppTransaction>
 
       if (_filterType != null) {
         transactions = transactions.where((t) => t.type == _filterType).toList();
+      }
+
+      if (_filterCategoryId != null) {
+        transactions = transactions.where((t) => t.categoryId == _filterCategoryId).toList();
       }
 
       state = AsyncValue.data(transactions);
@@ -117,5 +128,37 @@ final monthlySpendingProvider = Provider<Map<String, double>>((ref) {
       return spending;
     },
     orElse: () => {},
+  );
+});
+
+final smartInsightsProvider = Provider<String?>((ref) {
+  final transactionsAsync = ref.watch(transactionsProvider);
+  return transactionsAsync.maybeWhen(
+    data: (transactions) {
+      final now = DateTime.now();
+      final lastMonth = DateTime(now.year, now.month - 1);
+      
+      final thisMonthSpending = transactions
+          .where((t) => t.type == 'expense' && t.date.month == now.month && t.date.year == now.year)
+          .fold(0.0, (sum, t) => sum + t.amount);
+          
+      final lastMonthSpending = transactions
+          .where((t) => t.type == 'expense' && t.date.month == lastMonth.month && t.date.year == lastMonth.year)
+          .fold(0.0, (sum, t) => sum + t.amount);
+      
+      if (thisMonthSpending == 0) return "Start logging to see insights! 📈";
+      
+      if (lastMonthSpending > 0) {
+        final diff = ((thisMonthSpending - lastMonthSpending) / lastMonthSpending) * 100;
+        if (diff < 0) {
+          return "Great job! You spent ${diff.abs().toStringAsFixed(0)}% less than last month. 🚀";
+        } else if (diff > 20) {
+          return "Alert: Your spending is ${diff.toStringAsFixed(0)}% higher than last month. ⚠️";
+        }
+      }
+      
+      return "You're doing great! Keep tracking to master your budget.";
+    },
+    orElse: () => null,
   );
 });

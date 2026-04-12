@@ -6,6 +6,8 @@ import '../../services/providers.dart';
 import '../../services/export_service.dart';
 import '../../services/notification_service.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:share_plus/share_plus.dart';
+import '../../services/backup_service.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -90,11 +92,40 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
           const Divider(),
+          const Divider(),
+
           _buildSectionHeader('Data Management'),
           ListTile(
-            title: const Text('Export JSON / CSV'),
-            subtitle: const Text('Generate a secure portable file of your entire financial history.'),
-            leading: const Icon(Icons.ios_share_outlined, color: Color(0xFF10B981)),
+            title: const Text('Backup to JSON'),
+            subtitle: const Text('Export a secure, encrypted-ready file of your entire history.'),
+            leading: const Icon(Icons.cloud_upload_outlined, color: Color(0xFF10B981)),
+            onTap: () async {
+              final path = await BackupService(ref.read(databaseProvider)).exportToJSON();
+              if (path != null) {
+                Share.shareXFiles([XFile(path)], text: 'PocketLedger Backup');
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Export failed.')));
+              }
+            },
+          ),
+          ListTile(
+            title: const Text('Restore from JSON'),
+            subtitle: const Text('Import data from a previous PocketLedger backup file.'),
+            leading: const Icon(Icons.settings_backup_restore_rounded, color: Color(0xFF10B981)),
+            onTap: () async {
+              final success = await BackupService(ref.read(databaseProvider)).importFromJSON();
+              if (success) {
+                ref.read(transactionsProvider.notifier).refresh();
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Data restored successfully!')));
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Restore failed or cancelled.')));
+              }
+            },
+          ),
+          ListTile(
+            title: const Text('Export to CSV'),
+            subtitle: const Text('Generate a spreadsheet-ready file (Excel/Google Sheets).'),
+            leading: const Icon(Icons.table_view_outlined, color: Color(0xFF10B981)),
             onTap: () {
               transactionsAsync.whenData((txs) {
                 CSVExportService.exportTransactions(txs);

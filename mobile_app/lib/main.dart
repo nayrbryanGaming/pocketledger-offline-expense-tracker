@@ -8,6 +8,8 @@ import 'features/onboarding/onboarding_screen.dart';
 import 'services/providers.dart';
 import 'services/security_service.dart';
 import 'services/notification_service.dart';
+import 'services/database_service.dart';
+import 'services/recurring_engine.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +17,9 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final onboardingDone = prefs.getBool('onboarding_done') ?? false;
   final securityEnabled = prefs.getBool('biometric_enabled') ?? false;
+
+  final db = DatabaseService();
+  await RecurringEngine(db).sync();
 
   await NotificationService().init();
   if (onboardingDone) {

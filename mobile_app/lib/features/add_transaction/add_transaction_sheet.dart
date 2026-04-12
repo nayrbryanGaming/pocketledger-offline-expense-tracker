@@ -19,6 +19,8 @@ class _AddTransactionSheetState extends ConsumerState<AddTransactionSheet> {
   String _type = 'expense';
   int? _categoryId;
   DateTime _date = DateTime.now();
+  bool _isRecurring = false;
+  String _frequency = 'monthly';
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +75,30 @@ class _AddTransactionSheetState extends ConsumerState<AddTransactionSheet> {
                 validator: (v) => (double.tryParse(v ?? '') ?? 0) <= 0 ? 'Enter a valid amount' : null,
               ),
               const SizedBox(height: 16),
+              
+              // Recurring Toggle
+              SwitchListTile(
+                title: const Text('Recurring Transaction', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                subtitle: const Text('Automatically log this every period', style: TextStyle(fontSize: 12)),
+                value: _isRecurring,
+                activeColor: const Color(0xFF10B981),
+                onChanged: (v) => setState(() => _isRecurring = v),
+              ),
+              
+              if (_isRecurring) ...[
+                const SizedBox(height: 8),
+                DropdownButtonFormField<String>(
+                  value: _frequency,
+                  decoration: _inputDecoration('Frequency', Icons.repeat),
+                  items: const [
+                    DropdownMenuItem(value: 'daily', child: Text('Daily')),
+                    DropdownMenuItem(value: 'weekly', child: Text('Weekly')),
+                    DropdownMenuItem(value: 'monthly', child: Text('Monthly')),
+                  ],
+                  onChanged: (v) => setState(() => _frequency = v!),
+                ),
+              ],
+
               const SizedBox(height: 16),
               const Text('Select Category', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
@@ -189,16 +215,23 @@ class _AddTransactionSheetState extends ConsumerState<AddTransactionSheet> {
   }
 
   void _submit() {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate() && _categoryId != null) {
       final transaction = AppTransaction(
         title: _title,
         amount: _amount,
         type: _type,
         categoryId: _categoryId!,
         date: _date,
+        isRecurring: _isRecurring,
+        frequency: _isRecurring ? _frequency : null,
+        lastGeneratedDate: _isRecurring ? _date : null,
       );
       ref.read(transactionsProvider.notifier).addTransaction(transaction);
       Navigator.pop(context);
+    } else if (_categoryId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a category')),
+      );
     }
   }
 }

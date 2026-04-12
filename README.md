@@ -5,12 +5,14 @@ PocketLedger is a **Premium, Offline-First** personal finance application built 
 ## 🚀 The Build (PROD-READY)
 This application was architected for maximum performance and minimal friction. We believe that your financial logs are your business, which is why PocketLedger requires **Zero Internet Permissions** to function.
 
-### ✨ Key Features
+### ✨ Platinum Features
 - **⚡ Lightning Transaction Logging**: Enter expenses in under 3 seconds.
-- **🔒 Hardened Privacy**: Internal SQLite database with zero cloud sync or data transmission.
-- **📊 Interactive Analytics**: High-performance local charts (FL Chart) providing spending trend insights.
-- **🌓 Adaptive Themes**: Seamless switching between an Emerald Green Dark mode and a sleek Clean Light mode.
-- **📁 Production Utility**: Full CSV export and data wipe functionality for user autonomy.
+- **🔄 Recurring Automation**: Automatically log bills, rent, and subscriptions on app launch.
+- **🧠 Smart Insights**: Trend-based financial advice (e.g., "You saved 10% more than last month!").
+- **🔒 Hardened Privacy**: Internal SQLite database with **Zero Cloud Permissions**.
+- **📁 Full Data Portability**: JSON Backup & Restore + CSV Export for total user autonomy.
+- **📈 Advanced Filters**: Drill down by category, title, or type in real-time.
+- **🌓 Adaptive Themes**: Sleek Midnight Blue Dark mode vs. Clean Emerald Light mode.
 
 ## 🛠️ Tech Stack
 - **Flutter (latest stable)**: For a high-fidelity cross-platform experience.

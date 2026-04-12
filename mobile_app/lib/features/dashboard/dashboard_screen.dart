@@ -151,9 +151,43 @@ class DashboardScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Smart Insights Banner
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final insight = ref.watch(smartInsightsProvider);
+                      if (insight == null) return const SizedBox();
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 24),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0xFF10B981).withOpacity(0.1),
+                              const Color(0xFF3B82F6).withOpacity(0.1),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: const Color(0xFF10B981).withOpacity(0.2)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.auto_awesome, color: Color(0xFF10B981), size: 18),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                insight,
+                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ).animate().fadeIn().slideX(begin: -0.1);
+                    },
+                  ),
+
                   _buildSectionTitle('Active Spending'),
                   const SizedBox(height: 16),
-                  _buildSpendingChart(ref),
+                  _buildSpendingChart(ref).animate().fadeIn(delay: 200.ms).scale(curve: Curves.backOut),
                   const SizedBox(height: 24),
 
                   // Monthly Summary Row
@@ -166,7 +200,7 @@ class DashboardScreen extends ConsumerWidget {
                           ref.watch(privacyModeProvider) ? '••••' : CurrencyFormatter.format(monthlyIncome, ref.watch(currencyProvider)),
                           const Color(0xFF10B981),
                           Icons.arrow_upward,
-                        ),
+                        ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -176,7 +210,7 @@ class DashboardScreen extends ConsumerWidget {
                           ref.watch(privacyModeProvider) ? '••••' : CurrencyFormatter.format(monthlyExpense, ref.watch(currencyProvider)),
                           Colors.redAccent,
                           Icons.arrow_downward,
-                        ),
+                        ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.2),
                       ),
                     ],
                   ),
@@ -200,19 +234,42 @@ class DashboardScreen extends ConsumerWidget {
                         ref.read(transactionsProvider.notifier).setSearchQuery(v);
                       },
                     ),
-                  ),
+                  ).animate().fadeIn(delay: 600.ms).scale(),
                   
                   const SizedBox(height: 16),
                   
-                  // Filter Chips
-                  Row(
-                    children: [
-                      _buildFilterChip(ref, null, 'All'),
-                      const SizedBox(width: 8),
-                      _buildFilterChip(ref, 'income', 'Income'),
-                      const SizedBox(width: 8),
-                      _buildFilterChip(ref, 'expense', 'Expense'),
-                    ],
+                  // Type Filter
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildFilterChip(ref, null, 'All'),
+                        const SizedBox(width: 8),
+                        _buildFilterChip(ref, 'income', 'Income'),
+                        const SizedBox(width: 8),
+                        _buildFilterChip(ref, 'expense', 'Expense'),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  // Category Filter
+                  ref.watch(categoriesProvider).when(
+                    data: (categories) => SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildCategoryChip(ref, null, 'All Categories'),
+                          ...categories.map((c) => Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: _buildCategoryChip(ref, c.id, '${c.icon} ${c.name}'),
+                              )),
+                        ],
+                      ),
+                    ),
+                    loading: () => const SizedBox(height: 32),
+                    error: (_, __) => const SizedBox(),
                   ),
                   
                   const SizedBox(height: 16),
@@ -378,6 +435,28 @@ class DashboardScreen extends ConsumerWidget {
         if (selected) {
           HapticFeedback.selectionClick();
           ref.read(transactionsProvider.notifier).setFilterType(type);
+        }
+      },
+      selectedColor: const Color(0xFF10B981).withOpacity(0.2),
+      checkmarkColor: const Color(0xFF10B981),
+      labelStyle: TextStyle(
+        color: isActive ? const Color(0xFF10B981) : Colors.grey,
+        fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+      ),
+    );
+  }
+
+  Widget _buildCategoryChip(WidgetRef ref, int? categoryId, String label) {
+    final currentFilter = ref.watch(transactionsProvider.notifier).filterCategoryId;
+    final isActive = currentFilter == categoryId;
+    
+    return ChoiceChip(
+      label: Text(label),
+      selected: isActive,
+      onSelected: (selected) {
+        if (selected) {
+          HapticFeedback.selectionClick();
+          ref.read(transactionsProvider.notifier).setFilterCategory(categoryId);
         }
       },
       selectedColor: const Color(0xFF10B981).withOpacity(0.2),

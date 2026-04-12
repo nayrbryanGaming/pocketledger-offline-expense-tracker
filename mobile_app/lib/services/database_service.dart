@@ -23,8 +23,9 @@ class DatabaseService {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -54,6 +55,9 @@ class DatabaseService {
         category_id INTEGER,
         date TEXT,
         note TEXT,
+        is_recurring INTEGER DEFAULT 0,
+        frequency TEXT,
+        last_generated_date TEXT,
         FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE
       )
     ''');
@@ -84,15 +88,42 @@ class DatabaseService {
     }
   }
 
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE transactions ADD COLUMN is_recurring INTEGER DEFAULT 0');
+      await db.execute('ALTER TABLE transactions ADD COLUMN frequency TEXT');
+      await db.execute('ALTER TABLE transactions ADD COLUMN last_generated_date TEXT');
+    }
+  }
+
   // Transactions CRUD
   Future<int> insertTransaction(AppTransaction transaction) async {
     final db = await database;
     return await db.insert('transactions', transaction.toMap());
   }
 
+  Future<int> updateTransaction(AppTransaction transaction) async {
+    final db = await database;
+    return await db.update(
+      'transactions', 
+      transaction.toMap(), 
+      where: 'id = ?', 
+      whereArgs: [transaction.id]
+    );
+  }
+
   Future<List<AppTransaction>> getTransactions() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('transactions', orderBy: 'date DESC');
+    return List.generate(maps.length, (i) => AppTransaction.fromMap(maps[i]));
+  }
+
+  Future<List<AppTransaction>> getRecurringTransactions() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'transactions', 
+      where: 'is_recurring = 1'
+    );
     return List.generate(maps.length, (i) => AppTransaction.fromMap(maps[i]));
   }
 

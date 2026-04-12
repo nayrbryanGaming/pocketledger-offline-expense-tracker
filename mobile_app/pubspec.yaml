@@ -57,6 +57,7 @@ dependencies:
   in_app_review: ^2.0.11
   flutter_local_notifications: ^20.1.0
   timezone: ^0.10.1
+  file_picker: ^8.1.5
 
 dev_dependencies:
   flutter_test:
