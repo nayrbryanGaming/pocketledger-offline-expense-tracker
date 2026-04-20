@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,6 +7,7 @@ import '../../services/providers.dart';
 import '../../services/export_service.dart';
 import '../../services/notification_service.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../services/backup_service.dart';
 import '../categories/category_manager_screen.dart';
@@ -202,7 +204,6 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // ... in build method or helpers
   void _showLanguagePicker(BuildContext context, WidgetRef ref) {

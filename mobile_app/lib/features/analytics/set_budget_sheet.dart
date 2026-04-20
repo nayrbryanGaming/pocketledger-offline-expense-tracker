@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/providers.dart';
 import '../../data/models/category.dart';
@@ -58,7 +59,7 @@ class _SetBudgetSheetState extends ConsumerState<SetBudgetSheet> {
                   children: [
                     Text(
                       'Set Monthly Budget',
-                      style: TextStyle(fontSize: 14, color: Colors.grey.withOpacity(0.8), fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 14, color: Colors.grey.withValues(alpha: 0.8), fontWeight: FontWeight.bold),
                     ),
                     Text(
                       widget.category.name,

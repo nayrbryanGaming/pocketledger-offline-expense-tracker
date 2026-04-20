@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/providers.dart';
 import '../../data/models/category.dart';
@@ -35,7 +36,7 @@ class CategoryManagerScreen extends ConsumerWidget {
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.05),
+                color: Colors.grey.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: ListTile(
@@ -46,7 +47,7 @@ class CategoryManagerScreen extends ConsumerWidget {
                     color: Colors.white,
                     shape: BoxShape.circle,
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                      BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
                     ],
                   ),
                   child: Text(category.icon, style: const TextStyle(fontSize: 24)),
@@ -147,8 +148,8 @@ class CategoryManagerScreen extends ConsumerWidget {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: selectedIcon == icon ? const Color(0xFF10B981).withOpacity(0.1) : Colors.transparent,
-                        border: Border.all(color: selectedIcon == icon ? const Color(0xFF10B981) : Colors.grey.withOpacity(0.2)),
+                        color: selectedIcon == icon ? const Color(0xFF10B981).withValues(alpha: 0.1) : Colors.transparent,
+                        border: Border.all(color: selectedIcon == icon ? const Color(0xFF10B981) : Colors.grey.withValues(alpha: 0.2)),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(icon, style: const TextStyle(fontSize: 20)),

@@ -1,4 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/providers.dart';
 import 'budget_progress_widget.dart';
 import 'set_budget_sheet.dart';
@@ -162,7 +165,7 @@ class AnalyticsScreen extends ConsumerWidget {
                isCurved: true,
                color: const Color(0xFF10B981),
                barWidth: 4,
-               belowBarData: BarAreaData(show: true, color: const Color(0xFF10B981).withOpacity(0.1)),
+               belowBarData: BarAreaData(show: true, color: const Color(0xFF10B981).withValues(alpha: 0.1)),
              ),
            ],
          ),
@@ -201,7 +204,7 @@ class AnalyticsScreen extends ConsumerWidget {
              ),
            ),
            barGroups: [
-             BarChartGroupData(x: 0, barRods: [BarChartRodData(toY: lastMonthSpending, color: Colors.grey.withOpacity(0.5), width: 40, borderRadius: BorderRadius.circular(8))]),
+             BarChartGroupData(x: 0, barRods: [BarChartRodData(toY: lastMonthSpending, color: Colors.grey.withValues(alpha: 0.5), width: 40, borderRadius: BorderRadius.circular(8))]),
              BarChartGroupData(x: 1, barRods: [BarChartRodData(toY: thisMonthSpending, color: const Color(0xFF10B981), width: 40, borderRadius: BorderRadius.circular(8))]),
            ],
          ),

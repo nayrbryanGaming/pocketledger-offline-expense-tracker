@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,9 +8,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../services/providers.dart';
-import '../services/security_service.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
+import '../../services/providers.dart';
+import '../../services/security_service.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../add_transaction/add_transaction_sheet.dart';
 import '../settings/settings_screen.dart';
@@ -62,7 +63,7 @@ class DashboardScreen extends ConsumerWidget {
                       gradient: LinearGradient(
                         colors: [
                           const Color(0xFF10B981),
-                          const Color(0xFF10B981).withOpacity(0.8),
+                          const Color(0xFF10B981).withValues(alpha: 0.8),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -76,7 +77,7 @@ class DashboardScreen extends ConsumerWidget {
                       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
+                          color: Colors.white.withValues(alpha: 0.05),
                         ),
                       ),
                     ),
@@ -94,7 +95,7 @@ class DashboardScreen extends ConsumerWidget {
                             Text(
                               l10n.appTitle,
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withValues(alpha: 0.8),
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 1.2,
@@ -108,7 +109,7 @@ class DashboardScreen extends ConsumerWidget {
                               },
                               child: Icon(
                                 ref.watch(privacyModeProvider) ? Icons.visibility_off : Icons.visibility,
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withValues(alpha: 0.8),
                                 size: 16,
                               ),
                             ),
@@ -165,12 +166,12 @@ class DashboardScreen extends ConsumerWidget {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              const Color(0xFF10B981).withOpacity(0.1),
-                              const Color(0xFF3B82F6).withOpacity(0.1),
+                              const Color(0xFF10B981).withValues(alpha: 0.1),
+                              const Color(0xFF3B82F6).withValues(alpha: 0.1),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: const Color(0xFF10B981).withOpacity(0.2)),
+                          border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.2)),
                         ),
                         child: Row(
                           children: [
@@ -235,7 +236,7 @@ class DashboardScreen extends ConsumerWidget {
                             margin: const EdgeInsets.only(bottom: 16),
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Colors.grey.withOpacity(0.05),
+                              color: Colors.grey.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Column(
@@ -269,7 +270,7 @@ class DashboardScreen extends ConsumerWidget {
                                   child: LinearProgressIndicator(
                                     value: status.percent,
                                     minHeight: 8,
-                                    backgroundColor: Colors.grey.withOpacity(0.1),
+                                    backgroundColor: Colors.grey.withValues(alpha: 0.1),
                                     valueColor: AlwaysStoppedAnimation<Color>(
                                       status.isOver ? Colors.red : (status.percent > 0.8 ? Colors.orange : const Color(0xFF10B981)),
                                     ),
@@ -304,7 +305,7 @@ class DashboardScreen extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.05),
+                      color: Colors.grey.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: TextField(
@@ -385,7 +386,7 @@ class DashboardScreen extends ConsumerWidget {
                       leading: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: (isIncome ? Colors.green : Colors.red).withOpacity(0.1),
+                          color: (isIncome ? Colors.green : Colors.red).withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -472,9 +473,9 @@ class DashboardScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.1)),
+        border: Border.all(color: color.withValues(alpha: 0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -488,7 +489,7 @@ class DashboardScreen extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
-                  color: color.withOpacity(0.8),
+                  color: color.withValues(alpha: 0.8),
                   letterSpacing: 0.5,
                 ),
               ),
@@ -520,7 +521,7 @@ class DashboardScreen extends ConsumerWidget {
           ref.read(transactionsProvider.notifier).setFilterType(type);
         }
       },
-      selectedColor: const Color(0xFF10B981).withOpacity(0.2),
+      selectedColor: const Color(0xFF10B981).withValues(alpha: 0.2),
       checkmarkColor: const Color(0xFF10B981),
       labelStyle: TextStyle(
         color: isActive ? const Color(0xFF10B981) : Colors.grey,
@@ -542,7 +543,7 @@ class DashboardScreen extends ConsumerWidget {
           ref.read(transactionsProvider.notifier).setFilterCategory(categoryId);
         }
       },
-      selectedColor: const Color(0xFF10B981).withOpacity(0.2),
+      selectedColor: const Color(0xFF10B981).withValues(alpha: 0.2),
       checkmarkColor: const Color(0xFF10B981),
       labelStyle: TextStyle(
         color: isActive ? const Color(0xFF10B981) : Colors.grey,
@@ -558,9 +559,9 @@ class DashboardScreen extends ConsumerWidget {
       height: 200,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.05),
+        color: Colors.grey.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.grey.withOpacity(0.1)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
       ),
       child: spendingData.isEmpty 
         ? const Center(child: Text('Add an expense to see trends', style: TextStyle(fontSize: 12, color: Colors.grey)))

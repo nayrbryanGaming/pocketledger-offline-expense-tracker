@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/providers.dart';
@@ -123,10 +124,10 @@ class _AddTransactionSheetState extends ConsumerState<AddTransactionSheet> {
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFF10B981).withOpacity(0.1) : Colors.transparent,
+                          color: isSelected ? const Color(0xFF10B981).withValues(alpha: 0.1) : Colors.transparent,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: isSelected ? const Color(0xFF10B981) : Colors.grey.withOpacity(0.2),
+                            color: isSelected ? const Color(0xFF10B981) : Colors.grey.withValues(alpha: 0.2),
                             width: 2,
                           ),
                         ),
@@ -184,9 +185,9 @@ class _AddTransactionSheetState extends ConsumerState<AddTransactionSheet> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isActive ? color.withOpacity(0.1) : Colors.transparent,
+          color: isActive ? color.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isActive ? color : Colors.grey.withOpacity(0.2)),
+          border: Border.all(color: isActive ? color : Colors.grey.withValues(alpha: 0.2)),
         ),
         child: Center(
           child: Text(
@@ -209,7 +210,7 @@ class _AddTransactionSheetState extends ConsumerState<AddTransactionSheet> {
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.withOpacity(0.2)),
+        borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
       ),
     );
   }

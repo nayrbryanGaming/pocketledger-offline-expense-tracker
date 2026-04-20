@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,12 +7,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'services/providers.dart';
+import 'widgets/main_shell.dart';
 import 'services/security_service.dart';
 import 'services/notification_service.dart';
 import 'services/database_service.dart';
 import 'services/recurring_engine.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:mobile_app/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,10 +33,8 @@ void main() async {
   }
 
   bool isAuthenticated = !securityEnabled;
-  if (securityEnabled) {
-    final security = SecurityService();
-    isAuthenticated = await security.authenticate();
-  }
+  // Note: We don't authenticate in main anymore to prevent slow startup
+  // Authentication is handled by AuthLockScreen
 
   runApp(
     ProviderScope(
@@ -50,7 +50,7 @@ void main() async {
   );
 }
 
-class PocketLedgerApp extends ConsumerWidget {
+class PocketLedgerApp extends StatelessWidget {
   final AdaptiveThemeMode? savedThemeMode;
   final bool showOnboarding;
   final bool startAuthenticated;
@@ -63,10 +63,10 @@ class PocketLedgerApp extends ConsumerWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final locale = ref.watch(localeProvider);
+  Widget build(BuildContext context) {
     return AdaptiveTheme(
       light: ThemeData(
+        useMaterial3: true,
         brightness: Brightness.light,
         primaryColor: const Color(0xFF10B981),
         scaffoldBackgroundColor: const Color(0xFFF8FAFC),
@@ -78,6 +78,7 @@ class PocketLedgerApp extends ConsumerWidget {
         ),
       ),
       dark: ThemeData(
+        useMaterial3: true,
         brightness: Brightness.dark,
         primaryColor: const Color(0xFF10B981),
         scaffoldBackgroundColor: const Color(0xFF0F172A),
@@ -94,7 +95,6 @@ class PocketLedgerApp extends ConsumerWidget {
         debugShowCheckedModeBanner: false,
         theme: theme,
         darkTheme: darkTheme,
-        locale: locale,
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -114,7 +114,7 @@ class PocketLedgerApp extends ConsumerWidget {
     if (!startAuthenticated) {
       return const AuthLockScreen();
     }
-    return showOnboarding ? const OnboardingScreen() : const DashboardScreen();
+    return showOnboarding ? const OnboardingScreen() : const MainShell();
   }
 }
 
@@ -138,7 +138,7 @@ class AuthLockScreen extends ConsumerWidget {
                 if (success) {
                   Navigator.pushReplacement(
                     context, 
-                    MaterialPageRoute(builder: (c) => const DashboardScreen())
+                    MaterialPageRoute(builder: (c) => const MainShell())
                   );
                 }
               },
