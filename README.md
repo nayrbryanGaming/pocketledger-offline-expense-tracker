@@ -1,52 +1,164 @@
-# PocketLedger: Track Every Rupiah — Even Without Internet.
+<div align="center">
+  <img src="branding/logo.png" alt="PocketLedger Logo" width="120" height="120">
+  
+  <h1>PocketLedger</h1>
+  <p><strong>Track every rupiah — even without internet.</strong></p>
+  
+  <p>
+    <a href="#features">Features</a> •
+    <a href="#architecture">Architecture</a> •
+    <a href="#installation">Installation</a> •
+    <a href="#contribution">Contribution</a>
+  </p>
+</div>
 
-PocketLedger is a **Premium, Offline-First** personal finance application built to transform how users track their wealth without compromising privacy. This repository contains the complete production-ready source code for the mobile application, landing page, and documentation required for Google Play Store success.
+---
 
-## 🚀 The Build (PROD-READY)
-This application was architected for maximum performance and minimal friction. We believe that your financial logs are your business, which is why PocketLedger requires **Zero Internet Permissions** to function.
+## 📖 Product Overview
 
-### ✨ Platinum Features
-- **⚡ Lightning Transaction Logging**: Enter expenses in under 3 seconds.
-- **🔄 Recurring Automation**: Automatically log bills, rent, and subscriptions on app launch.
-- **🧠 Smart Insights**: Trend-based financial advice (e.g., "You saved 10% more than last month!").
-- **🔒 Hardened Privacy**: Internal SQLite database with **Zero Cloud Permissions**.
-- **📁 Full Data Portability**: JSON Backup & Restore + CSV Export for total user autonomy.
-- **📈 Advanced Filters**: Drill down by category, title, or type in real-time.
-- **🌓 Adaptive Themes**: Sleek Midnight Blue Dark mode vs. Clean Emerald Light mode.
+PocketLedger is an **offline-first** personal finance application that empowers users to track expenses, income, and budgets with zero reliance on internet connectivity. Designed with privacy and speed at its core, PocketLedger stores all financial data locally on the user's device. No cloud syncs, no data mining, just pure financial control.
 
-## 🛠️ Tech Stack
-- **Flutter (latest stable)**: For a high-fidelity cross-platform experience.
-- **Riverpod**: Robust state management for real-time UI updates.
-- **SQLite (sqflite)**: High-speed local data persistence.
-- **Next.js & Tailwind CSS**: For a stunning, modern landing page.
-- **Framer Motion**: For smooth, marketing-grade animations.
+### Problem Statement
+Most finance tracking apps today suffer from critical flaws:
+- They require constant internet access.
+- They send sensitive financial data to proprietary cloud servers.
+- They feature overcomplicated, sluggish user interfaces.
+- Transaction entry is unnecessarily slow.
 
-## 📁 Repository Structure
+### Solution
+PocketLedger disrupts the personal finance space by providing:
+- **100% offline expense tracking**
+- **Instant transaction logging** (zero latency)
+- **Local secure storage** (SQLite)
+- **Visual spending analytics** directly on-device
+
+### Unique Value Proposition
+1. **Offline-first Architecture**: Your data never leaves your device unless you explicitly export it.
+2. **Privacy-first Data Storage**: Zero telemetry, zero tracking.
+3. **Ultra-fast Transaction Entry**: Streamlined UI for entering data in seconds.
+4. **Lightweight UI**: Built with a sleek, modern, adaptive Flutter interface.
+5. **No Mandatory Account System**: Start tracking immediately upon launch.
+
+---
+
+## ✨ Features
+
+### Core Features
+- **Quick Transaction Entry**: Add income and expenses instantly.
+- **Income Tracking**: Monitor your cash flow efficiently.
+- **Category Management**: Customize categories with rich emojis and colors.
+- **Spending Analytics**: Visualize spending patterns with beautiful FL Charts.
+- **Monthly Summary**: Get a bird's-eye view of your monthly financial health.
+- **Budget Alerts**: Set monthly limits and track your progress.
+
+### Advanced Features
+- **Recurring Transactions**: Automate daily, weekly, or monthly expenses.
+- **CSV Export**: Export your data to Excel or Google Sheets.
+- **Encrypted Backup**: Backup and restore data securely via JSON.
+- **Dark Mode**: Adaptive dark/light themes for comfortable viewing.
+- **Financial Insights**: AI-driven (local) insights based on spending trends.
+
+---
+
+## 🏗️ Architecture
+
+PocketLedger follows a strict layered architecture built on top of Riverpod for state management:
+
 ```
-pocketledger-offline-expense-tracker/
-├── mobile_app/         # Flutter Source Code (Riverpod + SQLite)
-├── landing_page/       # Next.js & Tailwind Landing Page (Vercel Ready)
-├── docs/               # Architecture, Product Strategy, and Monetization
-├── legal/              # Play Store Compliant Policies (Privacy, Terms, Data Usage)
-├── branding/           # Brand identity assets (Colors, Guidelines, Logo)
-└── README.md           # This comprehensive guide
+User
+  ↓
+Flutter UI Layer (Presentation)
+  ↓
+State Management (Riverpod Notifiers)
+  ↓
+Repository / Service Layer
+  ↓
+Local Database (SQLite via sqflite)
 ```
 
-## 🏗️ Getting Started
-### Flutter Application
-1.  **Clone the Repository**: `git clone https://github.com/nayrbryanGaming/pocketledger-offline-expense-tracker`
-2.  **Navigate directly**: `cd mobile_app`
-3.  **Fetch Dependencies**: `flutter pub get`
-4.  **Run Directly**: `flutter run` (Connect your device via USB)
+- **Analytics Engine**: Reads transactions locally and generates visual summaries.
+- **Backup Flow**: SQLite Data → Encrypted JSON → Local File System (Cloud export is user-initiated only).
 
-### Marketing Page
-1.  **Navigate**: `cd landing_page`
-2.  **Install**: `npm install`
-3.  **Preview**: `npm run dev`
-4.  **Launch**: Deploy the folder directly to Vercel/Netlify.
+### Tech Stack
+- **Frontend**: Flutter (Latest Stable)
+- **State Management**: Flutter Riverpod
+- **Local Database**: SQLite (sqflite)
+- **Charts**: fl_chart
+- **Dependency Injection**: Provider overrides
 
-## 🏆 Competitive Advantage
-PocketLedger succeeds where other finance apps fail by eliminating the "loading spinner" fatigue. Every calculation happens locally. Every log stays private. It's the ultimate tool for the modern digital minimalist.
+---
 
-## 📜 License
-© 2026 PocketLedger. All Rights Reserved. This codebase is provided for production review and deployment.
+## 🛠️ Installation Steps
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/nayrbryanGaming/pocketledger-offline-expense-tracker.git
+   cd pocketledger-offline-expense-tracker/mobile_app
+   ```
+
+2. **Install dependencies**
+   ```bash
+   flutter pub get
+   ```
+
+3. **Run the application**
+   ```bash
+   flutter run
+   ```
+
+4. **Build APK for Android**
+   ```bash
+   flutter build apk --release
+   ```
+
+---
+
+## 📂 Project Structure
+
+```
+pocketledger-offline-expense-tracker
+├── mobile_app/
+│   ├── lib/
+│   │   ├── core/         # Constants, themes, utils
+│   │   ├── data/         # Models, DB schemas
+│   │   ├── features/     # Dashboard, Analytics, Add Transaction
+│   │   ├── services/     # Database, Backup, Notifications
+│   │   └── main.dart     # App Entrypoint
+├── branding/             # Logo and brand assets
+├── legal/                # Privacy policies and terms
+└── README.md             # You are here!
+```
+
+---
+
+## 🚀 Roadmap
+- [x] Initial Release (Offline tracking, Categories, Analytics)
+- [x] Recurring Transactions Engine
+- [x] JSON/CSV Export & Import
+- [ ] End-to-end Encrypted Cloud Sync (Optional/Opt-in)
+- [ ] AI-driven budget forecasting
+- [ ] Multi-currency support
+
+---
+
+## 💰 Monetization Strategy
+PocketLedger operates on a freemium model.
+- **Free Tier**: Unlimited local transactions, basic analytics, category management.
+- **Elite Tier (One-time purchase)**: Unlocks advanced forecasting, zero-knowledge sync, and unlimited wallets.
+
+### Competitive Advantage
+Unlike competitors (Mint, YNAB), PocketLedger respects user privacy by default and guarantees functionality without internet access. This caters directly to privacy-conscious users, travelers, and those in low-connectivity areas.
+
+---
+
+## 🤝 Contribution Guide
+1. Fork the project.
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
+
+---
+
+## 📄 License
+This project is proprietary and confidential. Unauthorized copying, modification, distribution, or use is strictly prohibited. For inquiries, contact the repository owner.

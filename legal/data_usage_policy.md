@@ -1,21 +1,15 @@
-# PocketLedger Data Usage Policy
+# Data Usage Policy
 
-**PocketLedger is committed to complete data transparency.**
+**Last Updated:** April 2026
 
-### Data Storage Architecture
-- **Technology**: Local SQLite Database.
-- **Location**: `/data/user/0/com.pocketledger.app/app_flutter/pocketledger_v2.db` (Internal app storage).
-- **Encryption**: Data is protected by the operating system's standard application sandboxing.
+## Local Storage Guarantee
+PocketLedger guarantees that 100% of your financial data (including transactions, categories, budgets, and application settings) is stored strictly on your local device. 
 
-### How We Use Your Data
-1. **Application Logic**: To calculate your total balance, monthly spending, and category distributions.
-2. **Visualizations**: To generate local charts using the `fl_chart` library.
-3. **User Exports**: To generate CSV files at your request.
+## No Telemetry
+We do not use tracking software, telemetry, or analytics engines to monitor your usage behavior or financial habits.
 
-### What We NEVER Do
-- We NEVER sell your data.
-- We NEVER share transaction history with advertisers.
-- We NEVER silent-sync data in the background.
+## Exporting Your Data
+You have the full right and capability to export your data at any time via the built-in CSV and JSON export tools. This data remains under your absolute control.
 
-### User Rights (GDPR/CCPA Compliance)
-As an offline-only user, you have the ultimate right of access and erasure. Deleting the app filesystem via your device settings or the in-app "Wipe" function immediately and permanently destroys all records.
+## System Permissions
+PocketLedger requires certain device permissions (such as Biometrics for app locking or Storage for exporting files). These permissions are strictly used for the requested functionality and never for harvesting data.

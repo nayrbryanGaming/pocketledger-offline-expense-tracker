@@ -1,15 +1,18 @@
 # Terms of Service
 
-**Effective Date:** 2026-04-11
+**Last Updated:** April 2026
 
-## 1. Acceptance
-By using PocketLedger, you agree to these Terms.
+## 1. Acceptance of Terms
+By downloading and using PocketLedger, you agree to these Terms of Service.
 
-## 2. No Financial Advice
-PocketLedger provides tools to track expenses. The App and its developers are NOT financial advisors. Any financial insights or patterns displayed by the application are for informational purposes only. Do not make critical financial decisions based solely on the App's analytics.
+## 2. App Usage
+PocketLedger is provided "as is" for personal finance tracking. You agree not to misuse the application or reverse engineer its proprietary components without permission.
 
-## 3. Data Integrity
-As an offline-first app, you are responsible for maintaining backups. We are not liable for any data loss due to phone damage, app uninstallation, or OS glitches.
+## 3. User Data Ownership
+You retain full ownership of all data entered into PocketLedger. Because the data is stored locally, we cannot recover lost data if you delete the app or lose your device without a manual backup.
 
-## 4. General Use
-PocketLedger grants you a personal, non-transferable license to use the app for simple expense tracking.
+## 4. Warranties and Limitation of Liability
+PocketLedger makes no guarantees regarding the accuracy of financial calculations. We are not liable for any financial losses or damages resulting from the use of this application.
+
+## 5. Termination
+We reserve the right to terminate or suspend access to our application immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.
