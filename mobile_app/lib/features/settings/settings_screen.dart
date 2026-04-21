@@ -209,7 +209,7 @@ class SettingsScreen extends ConsumerWidget {
   void _showLanguagePicker(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
-      shape: const BorderRadius.vertical(top: Radius.circular(24)),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) => Container(
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: Column(
@@ -241,7 +241,7 @@ class SettingsScreen extends ConsumerWidget {
   void _showCurrencyPicker(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
-      shape: const BorderRadius.vertical(top: Radius.circular(24)),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) => Container(
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: Column(
